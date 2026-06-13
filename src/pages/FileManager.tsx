@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import {
     Select,
     SelectContent,

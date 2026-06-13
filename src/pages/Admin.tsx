@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Search, Download, LogOut, Loader2, Upload, Trash2, Menu, Home } from "lucide-react";
 import {
   AlertDialog,

@@ -11,7 +11,7 @@ import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
 import AboutUs from "./pages/AboutUs";
 import Gallery from "./pages/Gallery";
-import ServiceDetail from "./pages/ServiceDetail";
+// import ServiceDetail from "./pages/ServiceDetail";
 import { useEffect } from "react";
 import FileManager from "./pages/FileManager";
 import ProtectedRoute from "./components/ProtectedRoute";

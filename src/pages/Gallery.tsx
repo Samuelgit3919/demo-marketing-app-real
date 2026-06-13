@@ -1,161 +1,208 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { galleryItems, galleryCategories } from "@/data/gallery";
 import { Navigation } from "@/components/Navigation";
-import { Button } from "@/components/ui/button";
-import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { Footer } from "@/components/Footer";
-import kitchenDesign from "@/assets/kitchen-design.jpg";
-import closetDesign from "@/assets/closet-design.jpg";
-import garageDesign from "@/assets/garage-design.jpg";
-import bedDesign from "@/assets/bed_design.jpg";
-import kitchenCabinet from "@/assets/kitchen_cabbinet.jpg";
-import tvTable from "@/assets/tv_table.png";
-import shoesFur from "@/assets/shoes_fur.png";
-import heroCloset from "@/assets/hero-closet.jpg";
+import Footer from "@/components/layout/Footer";
 
-type RoomType = "all" | "closet" | "kitchen" | "garage";
+export default function Gallery() {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeAlbum, setActiveAlbum] = useState<typeof galleryItems[number] | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(9);
 
-const Gallery = () => {
-  const [selectedFilter, setSelectedFilter] = useState<RoomType>("all");
-  const [showAll, setShowAll] = useState(false);
-  const navigate = useNavigate();
-  const { elementRef: headerRef, isVisible: headerVisible } = useIntersectionObserver();
-  const { elementRef: filterRef, isVisible: filterVisible } = useIntersectionObserver();
+  const filtered = activeCategory === "All"
+    ? galleryItems
+    : galleryItems.filter(item => item.category === activeCategory);
 
-  const handleImageClick = (projectId: number) => {
-    navigate(`/gallery/${projectId}`);
-  };
-
-  const fallbackProjects: Project[] = [
-    { id: 1, title: "Modern Walk-in Closet", type: "closet", image: closetDesign, description: "Custom walk-in closet with built-in shelving" },
-    { id: 2, title: "Luxury Kitchen Remodel", type: "kitchen", image: kitchenDesign, description: "Full kitchen transformation with premium finishes" },
-    { id: 3, title: "Garage Organization", type: "garage", image: garageDesign, description: "Complete garage storage and workspace solution" },
-    { id: 4, title: "Master Bedroom Built-ins", type: "closet", image: bedDesign, description: "Custom bedroom cabinetry and storage" },
-    { id: 5, title: "Kitchen Cabinetry", type: "kitchen", image: kitchenCabinet, description: "Handcrafted kitchen cabinets with soft-close hardware" },
-    { id: 6, title: "Entertainment Center", type: "closet", image: tvTable, description: "Custom TV unit with integrated storage" },
-    { id: 7, title: "Shoe & Wardrobe Storage", type: "closet", image: shoesFur, description: "Elegant shoe display and wardrobe organization" },
-    { id: 8, title: "Premium Closet System", type: "closet", image: heroCloset, description: "High-end closet system with lighting" },
-  ];
-
-  const projects = fallbackProjects;
-
-  const filteredProjects = selectedFilter === "all"
-    ? projects
-    : projects.filter(p => p.type === selectedFilter);
-
-  const scrollToGallery = () => {
-    document.getElementById('gallery-grid')?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const visible = filtered.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col justify-between">
       <Navigation />
-
-      {/* Hero Section */}
-      <section
-        ref={headerRef as React.RefObject<HTMLElement>}
-        className={`pt-24 pb-12 bg-gradient-hero text-primary-foreground transition-all duration-700 ${headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-      >
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Our Projects Gallery</h1>
-          <p className="text-xl md:text-2xl mb-8 text-primary-foreground/90 max-w-3xl mx-auto">
-            Explore our portfolio of stunning transformations across closets, kitchens, and garages
-          </p>
-          <Button variant="secondary" size="lg" onClick={scrollToGallery} className="shadow-medium">
-            View Projects
-          </Button>
-        </div>
-      </section>
-
-      {/* Filter Section */}
-      <section
-        ref={filterRef as React.RefObject<HTMLElement>}
-        className={`py-12 bg-secondary/30 transition-all duration-700 ${filterVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            {(["all", "closet", "kitchen", "garage"] as RoomType[]).map((type) => (
-              <Button
-                key={type}
-                variant={selectedFilter === type ? "default" : "outline"}
-                size="lg"
-                onClick={() => { setSelectedFilter(type); setShowAll(false); }}
-                className="transition-all duration-300 capitalize"
-              >
-                {type === "all" ? "All Projects" : `${type}s`}
-              </Button>
-            ))}
+      <div className="flex-grow">
+        {/* Hero */}
+        <div className="bg-[#1A1A18] pt-32 pb-20 px-6 lg:px-10">
+          <div className="max-w-7xl mx-auto">
+            <span className="text-[#C9A96E] text-xs tracking-[0.3em] uppercase block mb-4">Our Work</span>
+            <h1
+              className="text-white font-light"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)" }}
+            >
+              Closet Inspirations
+            </h1>
+            <p className="text-white/50 mt-4 max-w-xl text-sm">
+              Browse our portfolio of custom closet transformations. Each project is a unique collaboration between our designers and clients.
+            </p>
           </div>
         </div>
-      </section>
 
-      {/* Gallery Grid */}
-      <section id="gallery-grid" className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(showAll ? filteredProjects : filteredProjects.slice(0, 9)).map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} onClick={() => handleImageClick(project.id)} />
-            ))}
+        {/* Filters */}
+        <div className="bg-[#FAFAF7] border-b border-[#EBEBDF] sticky top-20 z-30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <div className="flex gap-0 overflow-x-auto scrollbar-hide">
+              {galleryCategories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => { setActiveCategory(cat); setVisibleCount(9); }}
+                  className={`flex-shrink-0 px-6 py-5 text-xs tracking-[0.2em] uppercase border-b-2 transition-all duration-200 ${
+                    activeCategory === cat
+                      ? "border-[#C9A96E] text-[#C9A96E]"
+                      : "border-transparent text-[#6B6B65] hover:text-[#1A1A18]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
-          {!showAll && filteredProjects.length > 9 && (
-            <div className="text-center mt-12">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setShowAll(true)}
-                className="gap-2"
-              >
-                See More Projects ({filteredProjects.length - 9} more)
-              </Button>
-            </div>
-          )}
-
-          {filteredProjects.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-2xl text-muted-foreground">No projects found in this category.</p>
-            </div>
-          )}
         </div>
-      </section>
 
+        {/* Gallery Grid */}
+        <div className="bg-[#FAFAF7] py-16">
+          <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+              {visible.map((item) => (
+                <div key={item.id} className="break-inside-avoid group relative overflow-hidden bg-white">
+                  <div
+                    className="relative overflow-hidden cursor-pointer"
+                    onClick={() => {
+                      setActiveAlbum(item);
+                      setActiveImageIndex(0);
+                    }}
+                  >
+                    <Image
+                      src={item.thumbnail}
+                      alt={item.title}
+                      width={600}
+                      height={700}
+                      className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-[#1A1A18]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-start justify-end p-6">
+                      <span className="text-[#C9A96E] text-[10px] tracking-[0.2em] uppercase mb-2">{item.category}</span>
+                      <h3 className="text-white font-light text-lg" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                        {item.title}
+                      </h3>
+                    </div>
+                  </div>
+                  {/* View Project link */}
+                  <div className="p-4 flex items-center justify-between border-t border-[#EBEBDF]">
+                    <span className="text-[#1A1A18] text-sm font-light">{item.title}</span>
+                    <Link
+                      href={`/gallery/${item.slug}`}
+                      className="group/link inline-flex items-center gap-2 text-[#C9A96E] text-[10px] tracking-[0.15em] uppercase hover:gap-3 transition-all"
+                    >
+                      View <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
 
+            {/* Load More */}
+            {visibleCount < filtered.length && (
+              <div className="text-center mt-12">
+                <button
+                  onClick={() => setVisibleCount(v => v + 6)}
+                  className="border border-[#1A1A18] text-[#1A1A18] text-xs tracking-[0.2em] uppercase px-10 py-4 hover:bg-[#1A1A18] hover:text-white transition-all duration-300"
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Album Lightbox */}
+        {activeAlbum && (
+          <div
+            className="fixed inset-0 z-50 bg-[#1A1A18]/95 flex flex-col justify-between p-6 overflow-y-auto"
+            onClick={() => setActiveAlbum(null)}
+          >
+            {/* Close button */}
+            <button
+              className="absolute top-6 right-6 w-10 h-10 border border-white/30 flex items-center justify-center text-white hover:border-[#C9A96E] hover:text-[#C9A96E] transition-colors z-50 bg-[#1A1A18]/80"
+              onClick={() => setActiveAlbum(null)}
+            >
+              <X size={18} />
+            </button>
+
+            {/* Main Viewer Area */}
+            <div className="flex-1 flex flex-col justify-center items-center max-w-5xl mx-auto w-full py-12 gap-6" onClick={e => e.stopPropagation()}>
+              <div className="relative w-full aspect-[4/3] max-h-[60vh] flex items-center justify-center group/viewer">
+                {/* Prev Button */}
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/20 bg-[#1A1A18]/80 text-white flex items-center justify-center hover:bg-[#C9A96E] hover:border-[#C9A96E] hover:text-[#1A1A18] transition-all opacity-0 group-hover/viewer:opacity-100 z-10"
+                  onClick={() => setActiveImageIndex(prev => (prev === 0 ? activeAlbum.images.length - 1 : prev - 1))}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <Image
+                  src={activeAlbum.images[activeImageIndex].src}
+                  alt={activeAlbum.images[activeImageIndex].title}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 80vw"
+                  priority
+                />
+
+                {/* Next Button */}
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/20 bg-[#1A1A18]/80 text-white flex items-center justify-center hover:bg-[#C9A96E] hover:border-[#C9A96E] hover:text-[#1A1A18] transition-all opacity-0 group-hover/viewer:opacity-100 z-10"
+                  onClick={() => setActiveImageIndex(prev => (prev === activeAlbum.images.length - 1 ? 0 : prev + 1))}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+
+              {/* Selected Image Description and Details */}
+              <div className="text-center max-w-2xl px-4">
+                <span className="text-[#C9A96E] text-[10px] tracking-[0.25em] uppercase block mb-1">
+                  {activeAlbum.category} — IMAGE {activeImageIndex + 1} OF {activeAlbum.images.length}
+                </span>
+                <h3 className="text-white text-2xl font-light mb-2" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                  {activeAlbum.images[activeImageIndex].title}
+                </h3>
+                <p className="text-white/60 text-sm leading-relaxed mb-4">
+                  {activeAlbum.images[activeImageIndex].description}
+                </p>
+                {activeAlbum.images[activeImageIndex].spec && (
+                  <div className="inline-block bg-white/5 border border-white/10 text-white/80 text-xs px-4 py-2 tracking-wide rounded-md">
+                    {activeAlbum.images[activeImageIndex].spec}
+                  </div>
+                )}
+              </div>
+
+              {/* Thumbnail Strip */}
+              <div className="flex gap-3 justify-center overflow-x-auto w-full scrollbar-hide py-2">
+                {activeAlbum.images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImageIndex(i)}
+                    className={`relative w-20 h-16 flex-shrink-0 overflow-hidden border-2 transition-all duration-300 ${
+                      activeImageIndex === i ? "border-[#C9A96E] scale-105" : "border-transparent opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <Image
+                      src={img.src}
+                      alt={`${activeAlbum.title} thumb ${i + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <Footer />
     </div>
   );
-};
-
-interface Project {
-  id: number;
-  title: string;
-  type: RoomType;
-  image: string;
-  description: string;
 }
-
-const ProjectCard = ({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) => {
-  const { elementRef, isVisible } = useIntersectionObserver();
-
-  return (
-    <div
-      ref={elementRef as React.RefObject<HTMLDivElement>}
-      onClick={onClick}
-      className={`group relative overflow-hidden shadow-medium hover:shadow-large transition-all duration-700 cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-      style={{ transitionDelay: `${index * 100}ms` }}
-    >
-      <div className="aspect-[4/3] overflow-hidden">
-        <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-primary-foreground transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-          <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
-          <p className="text-sm text-primary-foreground/90">{project.description}</p>
-          <span className="inline-block mt-3 px-3 py-1 bg-accent text-accent-foreground text-xs font-semibold rounded-full uppercase">
-            {project.type}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Gallery;

@@ -4,7 +4,7 @@ import { StepOne } from "@/components/wizard/StepOne";
 import { StepTwo } from "@/components/wizard/StepTwo";
 import { StepThree } from "@/components/wizard/StepThree";
 import { Card } from "@/components/ui/card";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 

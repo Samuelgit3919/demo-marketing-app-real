@@ -1,33 +1,27 @@
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { ArrowRight, Ruler, Upload, Calendar } from "lucide-react";
-import { Header } from "@/components/Header";
-import heroBackground from "@/assets/hero-background.jpg";
 import { Navigation } from "@/components/Navigation";
-import { Process } from "@/components/Process";
-import { Services } from "@/components/Services";
-import { BeforeAfter } from "@/components/BeforeAfter";
-import { VideoSection } from "@/components/VideoSection";
-import { Testimonials } from "@/components/Testimonials";
-import { CTA } from "@/components/CTA";
-import { FAQ } from "@/components/FAQ";
-import { Footer } from "@/components/Footer";
-import { Hero } from "@/components/Hero";
+import HeroSection from "@/components/sections/HeroSection";
+import ProcessSteps from "@/components/sections/ProcessSteps";
+import ServicesSection from "@/components/sections/ServicesSection";
+import TransformationsSection from "@/components/sections/TransformationsSection";
+import VideoSection from "@/components/sections/VideoSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import CTABanner from "@/components/sections/CTABanner";
+import FAQSection from "@/components/sections/FAQSection";
+import Footer from "@/components/layout/Footer";
 
 const Index = () => {
-
   return (
     <>
       <div className="min-h-screen">
         <Navigation />
-        <Hero />
-        <Process />
-        <Services />
-        <BeforeAfter />
+        <HeroSection />
+        <ProcessSteps />
+        <ServicesSection />
+        <TransformationsSection />
         <VideoSection />
-        <Testimonials />
-        <CTA />
-        <FAQ />
+        <TestimonialsSection />
+        <CTABanner />
+        <FAQSection />
         <Footer />
       </div>
     </>
