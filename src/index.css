@@ -10,6 +10,20 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Brand palette — Design & Supply warm premium theme.
+       Single source of truth for all brand colors.
+       Stored as HSL channels so Tailwind opacity modifiers (e.g. /80) work. */
+    --brand-cream: 34 47% 97%;       /* warm white page background  (#FBF8F4) */
+    --brand-sand: 34 41% 93%;        /* alternating section bg       (#F5EFE7) */
+    --brand-sand-light: 33 40% 90%;  /* subtle tints / big numbers   (#F0E7DC) */
+    --brand-border: 33 29% 87%;      /* card + divider borders       (#E7DED3) */
+    --brand-espresso: 24 20% 15%;    /* primary dark text / accents  (#2D241E) */
+    --brand-muted: 26 13% 37%;       /* secondary / body text        (#6B5D52) */
+    --brand-copper: 20 50% 51%;      /* primary copper button        (#C06D44) */
+    --brand-copper-dark: 19 55% 41%; /* copper hover                 (#A35530) */
+    --brand-copper-light: 24 46% 58%;/* copper accent on dark bg     (#C58B64) */
+    --brand-ink: 60 4% 10%;          /* near-black hero / overlay     (#1A1A18) */
+
     --background: 0 0% 100%;
     --foreground: 215 25% 27%;
 

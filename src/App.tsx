@@ -17,6 +17,7 @@ import FileManager from "./pages/FileManager";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { PromoPopup } from "@/components/PromoPopup";
 import GalleryDetailPage from "./pages/GalleryDetailPage";
+import Faq from "./pages/Faq";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/wizard" element={<Wizard />} />
+          <Route path="/space-planner" element={<Wizard />} />
+          <Route path="/faq" element={<Faq />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/file-manager" element={<ProtectedRoute>
             <FileManager />

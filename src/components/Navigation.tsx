@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Wallet } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/gallery", label: "Gallery" },
-  { href: "/about-us", label: "About Us" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export const Navigation = () => {
@@ -36,7 +36,7 @@ export const Navigation = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
           isLightState
-            ? "bg-[#F5F1EC]/95 backdrop-blur-md border-[#E5DDD3] shadow-sm"
+            ? "bg-brand-cream/95 backdrop-blur-md border-brand-border shadow-sm"
             : "bg-transparent border-transparent"
         }`}
       >
@@ -47,7 +47,7 @@ export const Navigation = () => {
               <div
                 className={`w-9 h-9 rounded-[10px] flex items-center justify-center font-serif font-bold text-base transition-all duration-500 ${
                   isLightState
-                    ? "bg-[#2D241E] text-white"
+                    ? "bg-brand-espresso text-white"
                     : "border border-white/20 text-white bg-white/5"
                 }`}
               >
@@ -56,12 +56,12 @@ export const Navigation = () => {
               <div className="flex flex-col leading-none">
                 <span
                   className={`font-serif text-[19px] font-bold tracking-tight transition-colors duration-500 ${
-                    isLightState ? "text-[#2D241E]" : "text-white"
+                    isLightState ? "text-brand-espresso" : "text-white"
                   }`}
                 >
                   Design
                 </span>
-                <span className="text-[#C58B64] font-sans text-[9px] tracking-[0.18em] uppercase font-semibold mt-0.5">
+                <span className="text-brand-copper-light font-sans text-[9px] tracking-[0.18em] uppercase font-semibold mt-0.5">
                   & Supply
                 </span>
               </div>
@@ -79,16 +79,16 @@ export const Navigation = () => {
                   className={`text-xs tracking-[0.15em] uppercase transition-all duration-300 relative py-1.5 group ${
                     isActive
                       ? isLightState
-                        ? "text-[#2D241E] font-medium"
+                        ? "text-brand-espresso font-medium"
                         : "text-white font-medium"
                       : isLightState
-                        ? "text-[#2D241E]/70 hover:text-[#2D241E]"
+                        ? "text-brand-espresso/70 hover:text-brand-espresso"
                         : "text-white/70 hover:text-white"
                   }`}
                 >
                   {link.label}
                   <span
-                    className={`absolute bottom-0 left-0 h-[2px] bg-[#C06D44] transition-all duration-300 ${
+                    className={`absolute bottom-0 left-0 h-[2px] bg-brand-copper transition-all duration-300 ${
                       isActive ? "w-full" : "w-0 group-hover:w-full"
                     }`}
                   />
@@ -99,22 +99,11 @@ export const Navigation = () => {
 
           {/* Column 3: Right Action Buttons (desktop) */}
           <div className="hidden lg:flex justify-end items-center gap-8">
-            <a
-              href="https://mtl-closets.myhelcim.com/hosted/?token=9f9e5d22c6d13444ef33d9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center gap-2 text-xs tracking-[0.15em] uppercase transition-all duration-300 ${
-                isLightState ? "text-[#2D241E]/75 hover:text-[#2D241E]" : "text-white/75 hover:text-white"
-              }`}
-            >
-              <Wallet size={16} />
-              <span>Pay Here</span>
-            </a>
             <Link
-              href="/wizard"
-              className="inline-flex items-center justify-center bg-[#C06D44] hover:bg-[#A35530] text-white text-xs tracking-[0.15em] uppercase font-sans font-medium px-6 py-2.5 rounded-full transition-all duration-300 shadow-sm"
+              href="/space-planner"
+              className="inline-flex items-center justify-center bg-brand-copper hover:bg-brand-copper-dark text-white text-xs tracking-[0.15em] uppercase font-sans font-medium px-6 py-2.5 rounded-full transition-all duration-300 shadow-sm"
             >
-              Get Started
+              Start Planner
             </Link>
           </div>
 
@@ -122,7 +111,7 @@ export const Navigation = () => {
           <div className="lg:hidden flex items-center">
             <button
               className={`p-2 transition-colors duration-300 ${
-                isLightState ? "text-[#2D241E]" : "text-white"
+                isLightState ? "text-brand-espresso" : "text-white"
               }`}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
@@ -135,7 +124,7 @@ export const Navigation = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 bg-[#1A1A18] transition-all duration-500 lg:hidden flex flex-col ${
+        className={`fixed inset-0 z-40 bg-brand-ink transition-all duration-500 lg:hidden flex flex-col ${
           mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         style={{ paddingTop: "5rem" }}
@@ -148,7 +137,7 @@ export const Navigation = () => {
                 key={link.href}
                 href={link.href}
                 className={`text-2xl tracking-[0.2em] uppercase font-light transition-all duration-300 ${
-                  isActive ? "text-[#C06D44]" : "text-white/70 hover:text-white"
+                  isActive ? "text-brand-copper" : "text-white/70 hover:text-white"
                 }`}
                 style={{ transitionDelay: mobileOpen ? `${i * 60}ms` : "0ms" }}
               >
@@ -156,24 +145,11 @@ export const Navigation = () => {
               </Link>
             );
           })}
-          
-          {/* Pay Here link in mobile menu */}
-          <a
-            href="https://mtl-closets.myhelcim.com/hosted/?token=9f9e5d22c6d13444ef33d9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-2xl tracking-[0.2em] uppercase font-light text-white/70 hover:text-white transition-all duration-300"
-            style={{ transitionDelay: mobileOpen ? `${navLinks.length * 60}ms` : "0ms" }}
-          >
-            <Wallet size={20} />
-            <span>Pay Here</span>
-          </a>
-
           <Link
-            href="/wizard"
-            className="mt-4 inline-flex items-center justify-center bg-[#C06D44] hover:bg-[#A35530] text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 w-full max-w-xs rounded-full transition-colors"
+            href="/space-planner"
+            className="mt-4 inline-flex items-center justify-center bg-brand-copper hover:bg-brand-copper-dark text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 w-full max-w-xs rounded-full transition-colors"
           >
-            Get Started
+            Start Planner
           </Link>
         </div>
       </div>

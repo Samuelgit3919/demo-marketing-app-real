@@ -5,12 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
-const stats = [
-  { value: "1,200+", label: "Projects Completed" },
-  { value: "98%", label: "Client Satisfaction" },
-  { value: "10yr", label: "Warranty Included" },
-];
-
 export default function HeroSection() {
   const [loaded, setLoaded] = useState(false);
 
@@ -20,20 +14,20 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex items-end overflow-hidden bg-[#1A1A18]">
+    <div className="relative min-h-screen flex items-end overflow-hidden bg-brand-ink">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop&q=85"
-          alt="Luxury walk-in closet"
+          alt="Custom designed walk-in closet, kitchen and garage storage"
           fill
           priority
           className={`object-cover transition-all duration-[2s] ${loaded ? "scale-100 opacity-60" : "scale-105 opacity-0"}`}
           sizes="100vw"
         />
         {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A18] via-[#1A1A18]/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A18]/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-ink/70 via-transparent to-transparent" />
       </div>
 
       {/* Content */}
@@ -44,8 +38,8 @@ export default function HeroSection() {
             className={`flex items-center gap-3 mb-8 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
             style={{ transitionDelay: "200ms" }}
           >
-            <span className="block w-12 h-px bg-[#C9A96E]" />
-            <span className="text-[#C9A96E] text-xs tracking-[0.3em] uppercase">Premium Closet Design</span>
+            <span className="block w-12 h-px bg-brand-copper-light" />
+            <span className="text-brand-copper-light text-xs tracking-[0.3em] uppercase">Online Design & Supply Platform</span>
           </div>
 
           {/* Headline */}
@@ -57,9 +51,9 @@ export default function HeroSection() {
               transitionDelay: "350ms"
             }}
           >
-            Custom Closet Designs<br />
-            <em className="text-[#C9A96E] not-italic">Tailored For</em><br />
-            Your Space
+            Custom closets, kitchens & garages<br />
+            <em className="text-brand-copper-light not-italic">designed live</em><br />
+            from your home.
           </h1>
 
           {/* Subheadline */}
@@ -67,7 +61,7 @@ export default function HeroSection() {
             className={`text-white/60 text-lg font-light leading-relaxed mb-12 max-w-xl transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
             style={{ transitionDelay: "500ms" }}
           >
-            We transform ordinary rooms into extraordinary personal sanctuaries — bespoke storage systems built to your exact specifications with premium materials and expert craftsmanship.
+            Use our 3-Step Space Planner to measure your space, upload photos, and meet with a designer live. We design your project in CAD and give you a same-day quote.
           </p>
 
           {/* CTA Buttons */}
@@ -76,36 +70,30 @@ export default function HeroSection() {
             style={{ transitionDelay: "650ms" }}
           >
             <Link
-              href="/wizard"
-              className="group inline-flex items-center justify-center gap-3 bg-[#C9A96E] text-[#1A1A18] text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 hover:bg-[#E8D5B0] transition-all duration-300"
+              href="/space-planner"
+              className="group inline-flex items-center justify-center gap-3 bg-brand-copper text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 rounded-full hover:bg-brand-copper-dark transition-all duration-300 shadow-lg"
             >
-              Start Your Transformation
+              Start 3-Step Space Planner
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/gallery"
-              className="inline-flex items-center justify-center gap-3 border border-white/30 text-white text-sm tracking-[0.2em] uppercase font-light px-8 py-4 hover:border-[#C9A96E] hover:text-[#C9A96E] transition-all duration-300"
+              href="/how-it-works"
+              className="inline-flex items-center justify-center gap-3 border border-white/30 text-white text-sm tracking-[0.2em] uppercase font-light px-8 py-4 rounded-full hover:border-brand-copper-light hover:text-brand-copper-light transition-all duration-300"
             >
-              Browse Gallery
+              See How It Works
             </Link>
           </div>
 
-          {/* Stats */}
+          {/* Quick flow */}
           <div
-            className={`flex flex-wrap gap-8 lg:gap-16 transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+            className={`flex flex-wrap gap-x-6 gap-y-2 text-white/50 text-xs tracking-[0.15em] uppercase transition-all duration-700 ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
             style={{ transitionDelay: "800ms" }}
           >
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col gap-1">
-                <span
-                  className="text-white text-3xl font-light"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  {stat.value}
-                </span>
-                <span className="text-white/40 text-xs tracking-[0.15em] uppercase">{stat.label}</span>
-              </div>
-            ))}
+            <span>Measure online</span>
+            <span className="text-brand-copper-light">/</span>
+            <span>Design live in CAD</span>
+            <span className="text-brand-copper-light">/</span>
+            <span>Same-day quote</span>
           </div>
         </div>
       </div>
@@ -113,7 +101,7 @@ export default function HeroSection() {
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
         <span className="text-white/30 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
-        <ChevronDown size={16} className="text-[#C9A96E] animate-bounce" />
+        <ChevronDown size={16} className="text-brand-copper-light animate-bounce" />
       </div>
     </div>
   );
