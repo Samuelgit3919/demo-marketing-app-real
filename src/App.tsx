@@ -42,7 +42,6 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/wizard" element={<Wizard />} />
           <Route path="/space-planner" element={<Wizard />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/auth" element={<Auth />} />

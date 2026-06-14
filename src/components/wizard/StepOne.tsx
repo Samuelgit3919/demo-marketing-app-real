@@ -1,12 +1,6 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Mail } from "lucide-react";
+import { useState, Dispatch, SetStateAction } from "react";
+import { Space } from "@/pages/Wizard";
+import { Plus, X } from "lucide-react";
 
 interface StepOneProps {
   formData: {
@@ -16,308 +10,173 @@ interface StepOneProps {
     postalCode: string;
   };
   setFormData: (data: any) => void;
+  spaces: Space[];
+  setSpaces: Dispatch<SetStateAction<Space[]>>;
   onNext: () => void;
 }
 
-export const StepOne = ({ formData, setFormData, onNext }: StepOneProps) => {
+export const StepOne = ({ formData, setFormData, spaces, setSpaces, onNext }: StepOneProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { t } = useLanguage();
-  const [loading, setLoading] = useState(false);
-  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
 
-  const [showPromptDialog, setShowPromptDialog] = useState(false);
-
-  // Check if user is already verified/logged in
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  const checkSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      setIsVerified(true);
-    }
-  };
-
-  // Validate phone: exactly 10 digits (ignoring spaces/hyphens)
-  const validatePhone = (phone: string) => {
-    const digitsOnly = phone.replace(/[\s\-]/g, '');
-    return digitsOnly.length === 10 && /^\d+$/.test(digitsOnly);
-  };
-
-  // Validate postal/zip: US (5 digits) or Canadian (A1A1A1 format)
-  const validatePostalCode = (code: string) => {
-    const cleaned = code.replace(/\s|-/g, '').toUpperCase();
-    // US ZIP: exactly 5 digits
-    const usZip = /^\d{5}$/;
-    // Canadian postal: exactly 6 chars in format LETTER-DIGIT-LETTER-DIGIT-LETTER-DIGIT (e.g., H4W2H8)
-    const canadianPostal = /^[A-Z]\d[A-Z]\d[A-Z]\d$/;
-    return usZip.test(cleaned) || canadianPostal.test(cleaned);
-  };
-
-  // Validate name: at least 2 letters
-  const validateName = (name: string) => {
-    return name.trim().length >= 3 && /^[a-zA-Z\s]+$/.test(name);
-  };
-
-  // Validate email: must have @ and a valid domain extension
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email);
-  };
-
-  // Check if form is valid (phone is optional but if provided must be 10 digits)
-  const isFormValid = () => {
-    const phoneValid = formData.phone.trim() === '' || validatePhone(formData.phone);
-    return (
-      validateName(formData.fullName) &&
-      validateEmail(formData.email) &&
-      phoneValid &&
-      validatePostalCode(formData.postalCode)
-    );
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const validate = () => {
     const newErrors: Record<string, string> = {};
-
-    if (!validateName(formData.fullName)) {
-      newErrors.fullName = t("step1.nameError");
+    if (formData.fullName.trim().length < 2) {
+      newErrors.fullName = "Full name must be at least 2 characters";
     }
-    if (!validateEmail(formData.email)) {
-      newErrors.email = t("step1.emailError");
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
     }
-    if (formData.phone.trim() !== '' && !validatePhone(formData.phone)) {
-      newErrors.phone = t("step1.phoneError");
+    if (!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$|^\d{5}$/.test(formData.postalCode)) {
+      newErrors.postalCode = "Please enter a valid US or Canadian postal code";
     }
-    if (!validatePostalCode(formData.postalCode)) {
-      newErrors.postalCode = t("step1.postalError");
+    if (formData.phone && !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+      newErrors.phone = "Phone number must be 10 digits";
     }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    // If already verified, just proceed
-    if (isVerified) {
-      setErrors({});
-      onNext();
-      return;
-    }
-
-    // If not verified, show prompt dialog
-    setShowPromptDialog(true);
-  };
-
-  const handleSendVerification = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: formData.email,
-        options: {
-          emailRedirectTo: window.location.href, // Redirect back to this page
-          shouldCreateUser: true,
-        },
-      });
-
-      if (error) throw error;
-
-      setShowPromptDialog(false);
-      setShowVerifyDialog(true);
-      toast.success("Verification email sent!");
-    } catch (error: any) {
-      console.error("Auth error:", error);
-      toast.error(error.message || "Failed to send verification email");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Validate on change and show inline errors
-  const handleInputChange = (field: string, value: string) => {
-    // For phone, only allow numbers and limit to 10 digits
-    if (field === 'phone') {
-      const numbersOnly = value.replace(/[^0-9]/g, '').slice(0, 10);
-      setFormData({ ...formData, [field]: numbersOnly });
-
-      // Inline validation
-      const newErrors = { ...errors };
-      newErrors.phone = numbersOnly.length > 0 && numbersOnly.length !== 10 ? t("step1.phoneError") : "";
-      setErrors(newErrors);
-      return;
-    }
-
-    setFormData({ ...formData, [field]: value });
-    const newErrors = { ...errors };
-    if (field === 'fullName') {
-      newErrors.fullName = value.trim().length > 0 && !validateName(value) ? t("step1.nameError") : "";
-    } else if (field === 'email') {
-      newErrors.email = value.trim().length > 0 && !validateEmail(value) ? t("step1.emailError") : "";
+    if (spaces.length === 0) {
+      newErrors.spaces = "Please add at least one space to design";
     }
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validate()) {
+      onNext();
+    }
+  };
+
+  const addSpace = () => {
+    const newSpace: Space = {
+      id: crypto.randomUUID(),
+      name: `New Space ${spaces.length + 1}`,
+      type: "Closet",
+      ceilingHeight: "96", // Default to 96 inches
+    };
+    setSpaces([...spaces, newSpace]);
+  };
+
+  const removeSpace = (id: string) => {
+    setSpaces(spaces.filter((s) => s.id !== id));
+  };
+
+  const updateSpace = (id: string, field: keyof Space, value: string) => {
+    setSpaces(spaces.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6 animate-in fade-in duration-500">
-        <div>
-          <h2 className="text-xl md:text-2xl font-semibold mb-2">{t("step1.title")}</h2>
-          {isVerified && (
-            <p className="text-sm text-green-600 font-medium flex items-center gap-2">
-              Email Verified <span className="inline-block w-2 h-2 rounded-full bg-green-600" />
-            </p>
-          )}
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div>
+        <h2 className="text-2xl font-semibold text-brand-espresso" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          Step 1: Contact & Spaces
+        </h2>
+        <p className="text-brand-muted mt-1">First, let's get your contact information and what spaces you'd like to design.</p>
+      </div>
+
+      {/* Contact Form */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+        {/* Name */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-brand-espresso">Name *</label>
+          <input
+            type="text"
+            value={formData.fullName}
+            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+            className={`w-full p-3 border rounded-md text-brand-espresso focus:ring-2 focus:ring-brand-copper/30 focus:border-brand-copper outline-none transition-all ${errors.fullName ? 'border-red-400' : 'border-brand-border'}`}
+            placeholder="Your full name"
+          />
+          {errors.fullName && <p className="text-xs text-red-500">{errors.fullName}</p>}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">{t("step1.name")}</Label>
-            <Input
-              id="fullName"
-              value={formData.fullName}
-              onChange={(e) => handleInputChange('fullName', e.target.value)}
-              required
-              placeholder={t("step1.namePlaceholder")}
-              className={`h-12 ${errors.fullName ? 'border-red-500' : ''}`}
-            />
-            {errors.fullName && <p className="text-xs text-red-500">{errors.fullName}</p>}
-          </div>
+        {/* Email */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-brand-espresso">Email *</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className={`w-full p-3 border rounded-md text-brand-espresso focus:ring-2 focus:ring-brand-copper/30 focus:border-brand-copper outline-none transition-all ${errors.email ? 'border-red-400' : 'border-brand-border'}`}
+            placeholder="you@example.com"
+          />
+          {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">{t("step1.email")}</Label>
-            <div className="relative">
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                required
-                placeholder={t("step1.emailPlaceholder")}
-                className={`h-12 ${errors.email ? 'border-red-500' : ''} ${isVerified ? 'bg-green-50 border-green-200' : ''}`}
-                readOnly={isVerified}
+        {/* Postal Code */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-brand-espresso">Postal Code *</label>
+          <input
+            type="text"
+            value={formData.postalCode}
+            onChange={(e) => setFormData({ ...formData, postalCode: e.target.value.replace(/\s/g, '').toUpperCase() })}
+            className={`w-full p-3 border rounded-md text-brand-espresso focus:ring-2 focus:ring-brand-copper/30 focus:border-brand-copper outline-none transition-all ${errors.postalCode ? 'border-red-400' : 'border-brand-border'}`}
+            placeholder="A1A1A1 or 12345"
+            maxLength={7}
+          />
+          {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode}</p>}
+        </div>
+
+        {/* Phone (optional) */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-brand-espresso">Phone (optional)</label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+            className={`w-full p-3 border rounded-md text-brand-espresso focus:ring-2 focus:ring-brand-copper/30 focus:border-brand-copper outline-none transition-all ${errors.phone ? 'border-red-400' : 'border-brand-border'}`}
+            placeholder="1234567890"
+          />
+          {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
+        </div>
+      </div>
+
+      {/* Add Spaces */}
+      <div className="pt-6">
+        <h3 className="text-xl font-semibold text-brand-espresso" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Your Spaces</h3>
+        <p className="text-brand-muted mt-1">Add each space you want to design. You can add multiple.</p>
+        {errors.spaces && <p className="text-xs text-red-500 mt-2">{errors.spaces}</p>}
+
+        <div className="space-y-4 mt-4">
+          {spaces.map((space) => (
+            <div key={space.id} className="flex items-center gap-4 p-4 bg-brand-sand/50 rounded-lg border border-brand-border">
+              <input
+                type="text"
+                value={space.name}
+                onChange={(e) => updateSpace(space.id, 'name', e.target.value)}
+                className="flex-grow bg-transparent focus:outline-none text-brand-espresso"
               />
-              {isVerified && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600">
-                  ✓
-                </div>
-              )}
+              <select
+                value={space.type}
+                onChange={(e) => updateSpace(space.id, 'type', e.target.value as Space['type'])}
+                className="bg-transparent focus:outline-none text-brand-muted"
+              >
+                <option>Closet</option>
+                <option>Kitchen</option>
+                <option>Garage</option>
+              </select>
+              <button onClick={() => removeSpace(space.id)} className="text-red-500 hover:text-red-700">
+                <X size={18} />
+              </button>
             </div>
-            {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">{t("step1.phone")}</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-              placeholder={t("step1.phonePlaceholder")}
-              className={`h-12 ${errors.phone ? 'border-red-500' : ''}`}
-            />
-            {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="postalCode">{t("step1.postal")}</Label>
-            <Input
-              id="postalCode"
-              value={formData.postalCode}
-              onChange={(e) => {
-                const cleaned = e.target.value.replace(/\s|-/g, "").toUpperCase();
-                setFormData({ ...formData, postalCode: cleaned });
-                setErrors({
-                  ...errors,
-                  postalCode: validatePostalCode(cleaned)
-                    ? ""
-                    : t("step1.postalError"),
-                });
-              }}
-              required
-              placeholder={t("step1.postalPlaceholder")}
-              className={`h-12 ${errors.postalCode ? 'border-red-500' : ''}`}
-              maxLength={6}
-            />
-            {errors.postalCode && <p className="text-xs text-red-500">{errors.postalCode}</p>}
-          </div>
+          ))}
         </div>
 
-        {/* Spacer for floating button */}
-        <div className="h-20" />
+        <button
+          onClick={addSpace}
+          className="mt-4 flex items-center gap-2 text-sm font-medium text-brand-copper hover:text-brand-copper-dark transition-colors"
+        >
+          <Plus size={16} />
+          Add Another Space
+        </button>
+      </div>
 
-        {/* Floating Navigation Button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t p-4 z-50">
-          <div className="max-w-5xl mx-auto flex justify-end">
-            <Button
-              type="submit"
-              size="lg"
-              className={`px-8 ${isFormValid() ? 'animate-pulse' : ''}`}
-              disabled={!isFormValid()}
-            >
-              {t("nav.next")}
-            </Button>
-          </div>
-        </div>
-      </form>
-
-      {/* Verification Prompt Dialog */}
-      <Dialog open={showPromptDialog} onOpenChange={setShowPromptDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Verify Email</DialogTitle>
-            <DialogDescription className="text-center pt-2">
-              To save your progress and continue, please verify your email address: <strong>{formData.email}</strong>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4 p-4">
-            <Button
-              size="lg"
-              onClick={handleSendVerification}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                "Verify Email & Continue"
-              )}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowPromptDialog(false)}
-              className="w-full"
-            >
-              Cancel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Check Email Dialog */}
-      <Dialog open={showVerifyDialog} onOpenChange={setShowVerifyDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Check your email</DialogTitle>
-            <DialogDescription className="text-center pt-2">
-              We've sent a magic link to <strong>{formData.email}</strong>.
-              <br />
-              Click the link in the email to verify your account and continue with your design.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center p-6">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center animate-pulse">
-              <Mail className="w-8 h-8 text-blue-500" />
-            </div>
-          </div>
-          <div className="text-center text-sm text-muted-foreground pb-4">
-            <p>Once you click the link, this page will reload and you can proceed to the next step.</p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+      {/* Navigation */}
+      <div className="flex justify-end pt-6">
+        <button
+          onClick={handleNext}
+          className="group inline-flex items-center justify-center gap-3 bg-brand-copper text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 rounded-full hover:bg-brand-copper-dark transition-all duration-300 shadow-lg"
+        >
+          Continue to Measure
+        </button>
+      </div>
+    </div>
   );
 };
