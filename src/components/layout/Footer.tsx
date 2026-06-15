@@ -69,8 +69,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/wizard" className="text-sm hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                <Link href="/space-planner" className="text-sm hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
                   Get Started
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-sm hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                  Contact
                 </Link>
               </li>
               <li>

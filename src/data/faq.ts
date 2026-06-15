@@ -48,5 +48,29 @@ export const faqs: FAQ[] = [
     question: "Can I see 3D renders before the build begins?",
     answer: "Yes — every project includes a full 3D visualization presented during your design approval meeting. You'll be able to see exactly how your closet will look, make any adjustments, and only sign off when you're completely satisfied. No build begins until you've approved the design.",
     category: "Design"
+  },
+  {
+    id: "9",
+    question: "Do you do closets, kitchens, and garages?",
+    answer: "Yes. We design and supply custom solutions for closets, kitchens, and garages. You can choose one space or plan multiple spaces with us.",
+    category: "Services"
+  },
+  {
+    id: "10",
+    question: "Can you work with my existing appliances?",
+    answer: "Yes. For kitchen projects, we can design around your current appliances as long as we have the right sizes and clear photos.",
+    category: "Kitchens"
+  },
+  {
+    id: "11",
+    question: "How long does cabinet delivery take after approval?",
+    answer: "Delivery timing depends on the project size and finish choices. Your designer will give you a clear timeline after the design is approved.",
+    category: "Delivery"
+  },
+  {
+    id: "12",
+    question: "Can I update my design after the live call?",
+    answer: "Yes. If you need changes, we can revise the design before final approval. We only move forward once you are happy with the final plan.",
+    category: "Design"
   }
 ];

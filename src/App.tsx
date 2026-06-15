@@ -18,6 +18,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { PromoPopup } from "@/components/PromoPopup";
 import GalleryDetailPage from "./pages/GalleryDetailPage";
 import Faq from "./pages/Faq";
+import Closets from "./pages/Closets";
+import Kitchens from "./pages/Kitchens";
+import Garages from "./pages/Garages";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +57,10 @@ const App = () => (
           </ProtectedRoute>} />
 
           <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/closets" element={<Closets />} />
+          <Route path="/kitchens" element={<Kitchens />} />
+          <Route path="/garages" element={<Garages />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/gallery/:id" element={<GalleryDetailPage />} />

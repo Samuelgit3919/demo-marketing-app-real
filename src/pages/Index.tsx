@@ -20,7 +20,7 @@ const Index = () => {
         <WhyDifferent />
         <HomeGallery />
         <SpacePlannerPreview />
-        <FAQSection />
+        <FAQSection limit={5} showViewAllButton />
         <CTABanner />
         <Footer />
       </div>

@@ -1,12 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, ArrowRight } from "lucide-react";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import { faqs } from "@/data/faq";
+import Link from "next/link";
 
-export default function FAQSection() {
+interface FAQSectionProps {
+  limit?: number;
+  showViewAllButton?: boolean;
+}
+
+export default function FAQSection({ limit, showViewAllButton = false }: FAQSectionProps) {
   const [open, setOpen] = useState<string | null>(null);
+  const displayedFaqs = typeof limit === "number" ? faqs.slice(0, limit) : faqs;
 
   return (
     <SectionWrapper className="bg-brand-cream py-24 lg:py-32">
@@ -28,7 +35,7 @@ export default function FAQSection() {
 
           {/* Accordion */}
           <div className="lg:col-span-8 flex flex-col divide-y divide-brand-border">
-            {faqs.map((faq) => (
+            {displayedFaqs.map((faq) => (
               <div key={faq.id} className="py-6">
                 <button
                   onClick={() => setOpen(open === faq.id ? null : faq.id)}
@@ -59,6 +66,18 @@ export default function FAQSection() {
                 </div>
               </div>
             ))}
+
+            {showViewAllButton && (
+              <div className="text-center pt-8">
+                <Link
+                  href="/faq"
+                  className="inline-flex items-center gap-2 text-brand-copper text-xs tracking-[0.2em] uppercase hover:gap-3 transition-all duration-300"
+                >
+                  View All FAQs
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

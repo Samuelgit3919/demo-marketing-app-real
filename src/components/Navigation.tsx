@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/how-it-works", label: "How It Works" },
   { href: "/gallery", label: "Gallery" },
   { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export const Navigation = () => {
@@ -69,7 +70,7 @@ export const Navigation = () => {
           </div>
 
           {/* Column 2: Center Navigation Links (desktop) */}
-          <div className="hidden lg:flex justify-center items-center gap-8">
+          <div className="hidden lg:flex justify-center items-center gap-5">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -98,10 +99,10 @@ export const Navigation = () => {
           </div>
 
           {/* Column 3: Right Action Buttons (desktop) */}
-          <div className="hidden lg:flex justify-end items-center gap-8">
+          <div className="hidden lg:flex justify-end items-center gap-6">
             <Link
               href="/space-planner"
-              className="inline-flex items-center justify-center bg-brand-copper hover:bg-brand-copper-dark text-white text-xs tracking-[0.15em] uppercase font-sans font-medium px-6 py-2.5 rounded-full transition-all duration-300 shadow-sm"
+              className="inline-flex items-center justify-center bg-brand-copper hover:bg-brand-copper-dark text-white text-[11px] tracking-[0.1em] uppercase font-sans font-medium px-5 py-2.5 rounded-full transition-all duration-300 shadow-sm whitespace-nowrap"
             >
               Start Planner
             </Link>

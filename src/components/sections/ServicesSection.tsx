@@ -8,19 +8,19 @@ import SectionWrapper from "@/components/ui/SectionWrapper";
 const serviceCards = [
   {
     title: "Closets",
-    href: "/space-planner",
+    href: "/closets",
     image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
     description: "Walk-ins, reach-ins, wardrobes, pantries, laundry rooms, and storage walls.",
   },
   {
     title: "Kitchens",
-    href: "/space-planner",
+    href: "/kitchens",
     image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
     description: "Custom kitchen cabinets designed live in CAD and supplied fully assembled.",
   },
   {
     title: "Garages",
-    href: "/space-planner",
+    href: "/garages",
     image: "https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=800&h=600&fit=crop",
     description: "Garage cabinets, workbenches, tall storage, and organized storage systems.",
   },
