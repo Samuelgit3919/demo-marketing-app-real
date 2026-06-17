@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import Header from "@/components/Header";
 import { Loader2 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 
@@ -138,7 +137,7 @@ const Auth = () => {
   if (session) {
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <div className="min-h-screen bg-background flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -148,7 +147,6 @@ const Auth = () => {
 
   return (
     <>
-      <Header />
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md p-8">
           <div className="mb-6 text-center">

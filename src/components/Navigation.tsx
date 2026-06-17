@@ -11,6 +11,21 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+const servicesLinks = [
+  { href: "/closets", label: "Closets" },
+  { href: "/kitchens", label: "Kitchens" },
+  { href: "/garages", label: "Garages" },
+];
+
+const desktopLinks = [
+  { href: "/", label: "Home" },
+  { href: "/how-it-works", label: "How It Works" },
+  { type: "dropdown", label: "Services" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+];
+
 export const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -71,7 +86,38 @@ export const Navigation = () => {
 
           {/* Column 2: Center Navigation Links (desktop) */}
           <div className="hidden lg:flex justify-center items-center gap-5">
-            {navLinks.map((link) => {
+            {desktopLinks.map((link) => {
+              if (link.type === "dropdown") {
+                return (
+                  <div key={link.label} className="relative group">
+                    <button
+                      type="button"
+                      className={`text-xs tracking-[0.15em] uppercase transition-all duration-300 relative py-1.5 ${
+                        isLightState
+                          ? "text-brand-espresso/70 hover:text-brand-espresso"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      {link.label}
+                      <span className="absolute bottom-0 left-0 h-[2px] bg-brand-copper transition-all duration-300 w-0 group-hover:w-full" />
+                    </button>
+                    <div className="absolute left-1/2 top-full mt-3 w-44 -translate-x-1/2 rounded-xl border border-brand-border bg-white shadow-lg opacity-0 translate-y-2 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto">
+                      <div className="py-2">
+                        {servicesLinks.map((service) => (
+                          <Link
+                            key={service.href}
+                            href={service.href}
+                            className="block px-4 py-2 text-xs uppercase tracking-[0.15em] text-brand-espresso/80 hover:text-brand-espresso hover:bg-brand-sand transition-colors"
+                          >
+                            {service.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
               const isActive = pathname === link.href;
               return (
                 <Link
@@ -146,6 +192,16 @@ export const Navigation = () => {
               </Link>
             );
           })}
+          {servicesLinks.map((service, i) => (
+            <Link
+              key={service.href}
+              href={service.href}
+              className="text-2xl tracking-[0.2em] uppercase font-light transition-all duration-300 text-white/70 hover:text-white"
+              style={{ transitionDelay: mobileOpen ? `${(i + navLinks.length) * 60}ms` : "0ms" }}
+            >
+              {service.label}
+            </Link>
+          ))}
           <Link
             href="/space-planner"
             className="mt-4 inline-flex items-center justify-center bg-brand-copper hover:bg-brand-copper-dark text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 w-full max-w-xs rounded-full transition-colors"
