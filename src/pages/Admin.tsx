@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Search, Download, Loader2, Upload, Trash2, Copy } from "lucide-react";
+import AdminTopBar from "@/components/layout/AdminTopBar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -81,30 +82,6 @@ const Admin = () => {
       return acc;
     },
     { total: 0, pending: 0, reviewed: 0, in_progress: 0, completed: 0, cancelled: 0 } as Record<string, number>
-  );
-
-  const AdminTopBar = ({ showActions = false }: { showActions?: boolean }) => (
-    <div className="border-b border-brand-border bg-white/90 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-[10px] bg-brand-espresso text-white flex items-center justify-center font-serif font-bold">
-            D
-          </div>
-          <div>
-            <p className="text-brand-espresso font-semibold">Admin Dashboard</p>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-brand-muted">Design & Supply</p>
-          </div>
-        </div>
-        {showActions && (
-          <Button
-            onClick={() => handleLogout()}
-            className="bg-brand-copper hover:bg-brand-copper-dark text-white text-[11px] tracking-[0.2em] uppercase font-medium px-4 py-2 rounded-full"
-          >
-            Logout
-          </Button>
-        )}
-      </div>
-    </div>
   );
 
   useEffect(() => {
@@ -328,7 +305,7 @@ const Admin = () => {
 
   return (
     <>
-      <AdminTopBar showActions />
+      <AdminTopBar onLogout={handleLogout} />
       <div className="min-h-screen bg-brand-cream py-10 px-4">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">

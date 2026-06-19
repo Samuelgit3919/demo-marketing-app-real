@@ -24,7 +24,41 @@ export interface SupabaseFile {
     created_at: string;
 }
 
-export interface GalleryItem {
+// Gallery project (gallery_projects table)
+export interface GalleryProject {
+    id: string;
+    title: string;
+    slug: string;
+    category: string;
+    type: 'closet' | 'kitchen' | 'garage' | 'other';
+    description: string | null;
+    tags: string[];
+    created_at: string;
+    updated_at: string;
+}
+
+// Gallery image (gallery table - updated with project grouping)
+export interface GalleryImage {
+    id: string;
+    project_id: string;
+    image_url: string;
+    public_id: string;
+    title: string;
+    description: string | null;
+    spec: string | null;
+    is_thumbnail: boolean;
+    sort_order: number;
+    created_at: string;
+    updated_at: string;
+}
+
+// Project with its images joined (used for album views)
+export interface GalleryProjectWithImages extends GalleryProject {
+    images: GalleryImage[];
+}
+
+// Legacy flat row (kept for compatibility with existing code during transition)
+export interface GalleryRow {
     id: string;
     image_url: string;
     public_id: string;
