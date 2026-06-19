@@ -85,7 +85,7 @@ export const Navigation = () => {
           </div>
 
           {/* Column 2: Center Navigation Links (desktop) */}
-          <div className="hidden lg:flex justify-center items-center gap-5">
+          <div className="hidden lg:flex justify-center items-center gap-6">
             {desktopLinks.map((link) => {
               if (link.type === "dropdown") {
                 return (
