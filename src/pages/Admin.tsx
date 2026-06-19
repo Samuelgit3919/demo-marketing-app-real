@@ -9,8 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Header } from "@/components/Header";
-import { Search, Download, LogOut, Loader2, Upload, Trash2, Menu, Home } from "lucide-react";
+import { Search, Download, Loader2, Upload, Trash2, Copy } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,11 +22,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import type { Session } from "@supabase/supabase-js";
 
 interface Submission {
@@ -57,6 +57,55 @@ const Admin = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+
+  const statusBadgeClasses: Record<string, string> = {
+    pending: "bg-brand-sand text-brand-espresso border-brand-border hover:bg-brand-sand",
+    reviewed: "bg-brand-copper/20 text-brand-copper-dark border-brand-copper/40 hover:bg-brand-copper/20",
+    in_progress: "bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-50",
+    completed: "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-50",
+    cancelled: "bg-red-50 text-red-700 border-red-200 hover:bg-red-50",
+  };
+
+  const getStatusBadgeClass = (status: string) => statusBadgeClasses[status] || "bg-brand-sand text-brand-espresso border-brand-border";
+
+  const getSpaceSummary = (spaces: any) => {
+    if (!Array.isArray(spaces) || spaces.length === 0) return "No spaces submitted";
+    const types = Array.from(new Set(spaces.map((space: any) => space.type).filter(Boolean)));
+    return `${spaces.length} space${spaces.length > 1 ? "s" : ""}${types.length ? `: ${types.join(", ")}` : ""}`;
+  };
+
+  const statusCounts = submissions.reduce(
+    (acc, submission) => {
+      acc.total += 1;
+      acc[submission.status] = (acc[submission.status] || 0) + 1;
+      return acc;
+    },
+    { total: 0, pending: 0, reviewed: 0, in_progress: 0, completed: 0, cancelled: 0 } as Record<string, number>
+  );
+
+  const AdminTopBar = ({ showActions = false }: { showActions?: boolean }) => (
+    <div className="border-b border-brand-border bg-white/90 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-[10px] bg-brand-espresso text-white flex items-center justify-center font-serif font-bold">
+            D
+          </div>
+          <div>
+            <p className="text-brand-espresso font-semibold">Admin Dashboard</p>
+            <p className="text-[11px] uppercase tracking-[0.2em] text-brand-muted">Design & Supply</p>
+          </div>
+        </div>
+        {showActions && (
+          <Button
+            onClick={() => handleLogout()}
+            className="bg-brand-copper hover:bg-brand-copper-dark text-white text-[11px] tracking-[0.2em] uppercase font-medium px-4 py-2 rounded-full"
+          >
+            Logout
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     // Set up auth state listener
@@ -244,9 +293,9 @@ const Admin = () => {
   if (checkingAuth || !session) {
     return (
       <>
-        <Header />
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <AdminTopBar />
+        <div className="min-h-screen bg-brand-cream flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-brand-copper" />
         </div>
       </>
     );
@@ -255,11 +304,11 @@ const Admin = () => {
   if (!isAdmin) {
     return (
       <>
-        <Header />
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <Card className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground">You don't have admin privileges.</p>
+        <AdminTopBar />
+        <div className="min-h-screen bg-brand-cream flex items-center justify-center px-6">
+          <Card className="p-8 text-center border-brand-border">
+            <h2 className="text-2xl font-semibold text-brand-espresso mb-2">Access Denied</h2>
+            <p className="text-brand-muted">You don't have admin privileges.</p>
           </Card>
         </div>
       </>
@@ -269,9 +318,9 @@ const Admin = () => {
   if (loading) {
     return (
       <>
-        <Header />
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <p className="text-muted-foreground">Loading submissions...</p>
+        <AdminTopBar />
+        <div className="min-h-screen bg-brand-cream flex items-center justify-center">
+          <p className="text-brand-muted">Loading submissions...</p>
         </div>
       </>
     );
@@ -279,47 +328,60 @@ const Admin = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-background py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8 flex items-center justify-between">
+      <AdminTopBar showActions />
+      <div className="min-h-screen bg-brand-cream py-10 px-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-4xl font-bold mb-2">Admin Dashboard</h1>
-              <p className="text-muted-foreground">Review and manage client submissions</p>
+              <span className="text-brand-copper text-xs tracking-[0.3em] uppercase block mb-2">Dashboard</span>
+              <h1
+                className="text-3xl md:text-4xl text-brand-espresso font-light"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                Admin Overview
+              </h1>
+              <p className="text-brand-muted">Review and manage client submissions</p>
             </div>
-
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-2">
-
-              <Button onClick={() => navigate("/file-manager")} variant="outline">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => navigate("/file-manager")}
+                className="bg-white border border-brand-border text-brand-espresso hover:bg-brand-sand hover:text-brand-espresso"
+              >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Files
               </Button>
-              <Button onClick={() => handleLogout()} variant="outline">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
             </div>
-
-            {/* Mobile Actions - Moved to Header */}
           </div>
 
-          {/* Filters */}
-          <Card className="p-6 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: "Total", value: statusCounts.total },
+              { label: "Pending", value: statusCounts.pending },
+              { label: "Reviewed", value: statusCounts.reviewed },
+              { label: "Completed", value: statusCounts.completed },
+            ].map((stat) => (
+              <Card key={stat.label} className="p-4 border-brand-border bg-white">
+                <p className="text-xs uppercase tracking-[0.2em] text-brand-muted">{stat.label}</p>
+                <p className="text-2xl font-semibold text-brand-espresso mt-2">{stat.value}</p>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="p-6 border-brand-border bg-white">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted" />
                   <Input
                     placeholder="Search by name, email, or postal code..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 border-brand-border"
                   />
                 </div>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="border-brand-border">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -332,76 +394,160 @@ const Admin = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between text-sm text-brand-muted">
               <p>Showing {filteredSubmissions.length} of {submissions.length} submissions</p>
             </div>
           </Card>
 
           <div className="grid gap-6">
             {filteredSubmissions.length === 0 ? (
-              <Card className="p-12 text-center">
-                <p className="text-muted-foreground">
+              <Card className="p-12 text-center border-brand-border bg-white">
+                <p className="text-brand-muted">
                   {submissions.length === 0 ? "No submissions yet" : "No submissions match your filters"}
                 </p>
               </Card>
             ) : (
-              filteredSubmissions.map((submission) => (
-                <Card key={submission.id} className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-xl font-semibold">{submission.full_name}</h3>
-                        <p className="text-sm text-muted-foreground">{submission.email}</p>
-                        {submission.phone && (
-                          <p className="text-sm text-muted-foreground">{submission.phone}</p>
-                        )}
+              filteredSubmissions.map((submission) => {
+                const hasSpaces = Array.isArray(submission.spaces) && submission.spaces.length > 0;
+                return (
+                  <Card key={submission.id} className="p-6 border-brand-border bg-white shadow-[0_10px_30px_-20px_rgba(45,36,30,0.25)]">
+                    <div className="space-y-5">
+                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                        <div>
+                          <h3 className="text-xl font-semibold text-brand-espresso">{submission.full_name}</h3>
+                          <p className="text-sm text-brand-muted">{submission.email}</p>
+                          {submission.phone && (
+                            <p className="text-sm text-brand-muted">{submission.phone}</p>
+                          )}
+                          <p className="text-sm text-brand-muted">Postal: {submission.postal_code}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className={`${getStatusBadgeClass(submission.status)}`}>
+                            {submission.status}
+                          </Badge>
+                          <span className="text-sm text-brand-muted">
+                            {format(new Date(submission.created_at), "MMM d, yyyy")}
+                          </span>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="icon" variant="ghost" className="text-red-500 hover:text-red-600">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Submission</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete the submission from <strong>{submission.full_name}</strong>. This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={() => deleteSubmission(submission.id)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={submission.status === 'pending' ? 'secondary' : 'default'}>
-                          {submission.status}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {format(new Date(submission.created_at), 'MMM d, yyyy')}
-                        </span>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Submission</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently delete the submission from <strong>{submission.full_name}</strong>. This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                onClick={() => deleteSubmission(submission.id)}
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm font-semibold mb-1">Location</p>
-                        <p className="text-sm text-muted-foreground">{submission.postal_code}</p>
+                      <div className="rounded-xl border border-brand-border bg-brand-sand/40 p-4">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                          <div>
+                            <p className="text-xs uppercase tracking-[0.2em] text-brand-muted mb-1">Spaces</p>
+                            <p className="text-sm font-semibold text-brand-espresso">{getSpaceSummary(submission.spaces)}</p>
+                          </div>
+                          {hasSpaces && (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" className="border-brand-border text-brand-espresso hover:bg-brand-sand hover:text-brand-espresso">
+                                  View Space Details
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl bg-brand-cream border-brand-border">
+                                <DialogHeader>
+                                  <DialogTitle className="text-brand-espresso">Space Details</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                                  {submission.spaces.map((space: any, index: number) => (
+                                    <div key={index} className="bg-white border border-brand-border rounded-xl p-4">
+                                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                                        <div>
+                                          <p className="text-base font-semibold text-brand-espresso">
+                                            {space.name || `Space ${index + 1}`}
+                                          </p>
+                                          <p className="text-xs text-brand-muted">
+                                            {space.type || "Space"} • Ceiling: {space.ceilingHeight || "N/A"} {space.unit || "cm"}
+                                          </p>
+                                        </div>
+                                        <div className="text-xs text-brand-muted">Unit: {space.unit || "cm"}</div>
+                                      </div>
+
+                                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                                        <div>
+                                          <p className="uppercase tracking-[0.2em] text-brand-muted">Perimeter</p>
+                                          <p className="text-brand-espresso font-semibold">
+                                            {space.totalPerimeter ? `${space.totalPerimeter.toFixed(2)} ${space.unit || "cm"}` : "N/A"}
+                                          </p>
+                                        </div>
+                                        <div>
+                                          <p className="uppercase tracking-[0.2em] text-brand-muted">Area</p>
+                                          <p className="text-brand-espresso font-semibold">
+                                            {space.totalArea ? `${space.totalArea.toFixed(2)} ${space.unit || "cm"}²` : "N/A"}
+                                          </p>
+                                        </div>
+                                        <div>
+                                          <p className="uppercase tracking-[0.2em] text-brand-muted">Ceiling</p>
+                                          <p className="text-brand-espresso font-semibold">
+                                            {space.ceilingHeight || "N/A"} {space.unit || "cm"}
+                                          </p>
+                                        </div>
+                                        <div>
+                                          <p className="uppercase tracking-[0.2em] text-brand-muted">Type</p>
+                                          <p className="text-brand-espresso font-semibold">{space.type || "Space"}</p>
+                                        </div>
+                                      </div>
+
+                                      {space.wallMeasurements && space.wallMeasurements.length > 0 && (
+                                        <div className="mt-4">
+                                          <p className="text-xs uppercase tracking-[0.2em] text-brand-muted mb-2">
+                                            Wall Measurements ({space.unit || "cm"})
+                                          </p>
+                                          <div className="flex flex-wrap gap-2">
+                                            {space.wallMeasurements.map((wall: any, wallIndex: number) => (
+                                              <span key={wallIndex} className="text-xs bg-brand-sand-light text-brand-espresso px-2.5 py-1 rounded-full">
+                                                Wall {wall.label}: {wall.length || "—"} {space.unit || "cm"}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      <div className="mt-4">
+                                        {space.drawingData ? (
+                                          <div className="border border-brand-border rounded-lg overflow-hidden bg-brand-cream">
+                                            <img
+                                              src={space.drawingData}
+                                              alt={`${space.name || `Space ${index + 1}`} drawing`}
+                                              className="w-full h-auto"
+                                            />
+                                          </div>
+                                        ) : (
+                                          <p className="text-sm text-brand-muted">No drawing uploaded.</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold mb-1">Spaces</p>
-                        <p className="text-sm text-muted-foreground">
-                          {Array.isArray(submission.spaces) ? submission.spaces.length : 0} space(s)
-                        </p>
-                      </div>
-                    </div>
 
                     {/* Meeting Details */}
                     {submission.meeting_date && submission.meeting_link && (
@@ -459,87 +605,12 @@ const Admin = () => {
                       </Card>
                     )}
 
-                    {/* Customer Drawings */}
-                    {Array.isArray(submission.spaces) && submission.spaces.some((space: any) => space.drawingData) && (
-                      <div>
-                        <p className="text-sm font-semibold mb-3">Customer Drawings</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {submission.spaces.map((space: any, index: number) => (
-                            space.drawingData && (
-                              <div key={index} className="border border-border rounded-lg overflow-hidden">
-                                <div className="bg-muted px-3 py-2">
-                                  <p className="text-sm font-medium">{space.name || `Space ${index + 1}`}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {space.type} • Ceiling: {space.ceilingHeight || 'N/A'} {space.unit || 'cm'}
-                                  </p>
-                                </div>
-                                <div className="p-2 bg-white">
-                                  <img
-                                    src={space.drawingData}
-                                    alt={`${space.name} drawing`}
-                                    className="w-full h-auto rounded"
-                                  />
-                                </div>
-
-                                {/* Wall Measurements */}
-                                {space.wallMeasurements && space.wallMeasurements.length > 0 && (
-                                  <div className="px-3 py-3 bg-muted/50 border-t">
-                                    <p className="text-xs font-semibold mb-2 text-foreground">Wall Measurements ({space.unit || 'cm'})</p>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                      {space.wallMeasurements.map((wall: any, wallIndex: number) => (
-                                        <div key={wallIndex} className="flex items-center gap-1 text-xs">
-                                          <span className="font-semibold text-primary">Wall {wall.label}:</span>
-                                          <span className="text-foreground">{wall.length || '—'} {space.unit || 'cm'}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    {space.totalPerimeter > 0 && (
-                                      <div className="mt-3 pt-2 border-t border-border">
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                          <div className="flex items-center gap-1 text-xs">
-                                            <span className="font-semibold text-muted-foreground">Total Perimeter:</span>
-                                            <span className="font-bold text-primary">{space.totalPerimeter.toFixed(2)} {space.unit || 'cm'}</span>
-                                          </div>
-                                          {space.totalArea > 0 && (
-                                            <div className="flex items-center gap-1 text-xs">
-                                              <span className="font-semibold text-muted-foreground">Estimated Area:</span>
-                                              <span className="font-bold text-primary">{space.totalArea.toFixed(2)} {space.unit || 'cm'}²</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                <div className="px-3 py-2 flex justify-end border-t">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => {
-                                      const link = document.createElement('a');
-                                      link.href = space.drawingData;
-                                      link.download = `${space.name}-drawing.png`;
-                                      link.click();
-                                    }}
-                                  >
-                                    <Download className="w-4 h-4 mr-1" />
-                                    Download
-                                  </Button>
-                                </div>
-                              </div>
-                            )
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     {submission.storage_priorities.length > 0 && (
                       <div>
-                        <p className="text-sm font-semibold mb-2">Storage Priorities</p>
-                        <div className="flex gap-2">
+                        <p className="text-sm font-semibold text-brand-espresso mb-2">Storage Priorities</p>
+                        <div className="flex flex-wrap gap-2">
                           {submission.storage_priorities.map((priority) => (
-                            <Badge key={priority} variant="outline">
+                            <Badge key={priority} className="border-brand-border text-brand-espresso bg-brand-sand-light">
                               {priority}
                             </Badge>
                           ))}
@@ -550,12 +621,12 @@ const Admin = () => {
                     {/* Step 2 Uploaded Files */}
                     {submission.file_paths && submission.file_paths.length > 0 && (
                       <div>
-                        <p className="text-sm font-semibold mb-3">Allocated Files (Step 2)</p>
+                        <p className="text-sm font-semibold text-brand-espresso mb-3">Allocated Files (Step 2)</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {submission.file_paths.map((path, index) => {
                             const { data: { publicUrl } } = supabase.storage.from("images").getPublicUrl(path);
                             return (
-                              <div key={index} className="border rounded-lg overflow-hidden group relative">
+                              <div key={index} className="border border-brand-border rounded-lg overflow-hidden group relative bg-white">
                                 <img
                                   src={publicUrl}
                                   alt={`Upload ${index + 1}`}
@@ -579,18 +650,18 @@ const Admin = () => {
 
                     {submission.additional_notes && (
                       <div>
-                        <p className="text-sm font-semibold mb-1">Notes</p>
-                        <p className="text-sm text-muted-foreground">{submission.additional_notes}</p>
+                        <p className="text-sm font-semibold text-brand-espresso mb-1">Notes</p>
+                        <p className="text-sm text-brand-muted">{submission.additional_notes}</p>
                       </div>
                     )}
 
                     <div className="pt-4">
-                      <Label className="text-sm font-semibold mb-2 block">Update Status</Label>
+                      <Label className="text-sm font-semibold text-brand-espresso mb-2 block">Update Status</Label>
                       <Select
                         value={submission.status}
                         onValueChange={(value) => updateStatus(submission.id, value)}
                       >
-                        <SelectTrigger className="w-full md:w-[200px]">
+                        <SelectTrigger className="w-full md:w-[200px] border-brand-border">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -602,9 +673,23 @@ const Admin = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div className="flex items-center gap-2 text-xs text-brand-muted">
+                      <span>Submission ID:</span>
+                      <span className="font-mono text-[11px] text-brand-espresso">{submission.id}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-brand-muted hover:text-brand-espresso"
+                        onClick={() => navigator.clipboard.writeText(submission.id)}
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
                   </div>
                 </Card>
-              ))
+              );
+            })
             )}
           </div>
         </div>

@@ -11,12 +11,17 @@ import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
 import AboutUs from "./pages/AboutUs";
 import Gallery from "./pages/Gallery";
-import ServiceDetail from "./pages/ServiceDetail";
+// import ServiceDetail from "./pages/ServiceDetail";
 import { useEffect } from "react";
 import FileManager from "./pages/FileManager";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { PromoPopup } from "@/components/PromoPopup";
 import GalleryDetailPage from "./pages/GalleryDetailPage";
+import Faq from "./pages/Faq";
+import Closets from "./pages/Closets";
+import Kitchens from "./pages/Kitchens";
+import Garages from "./pages/Garages";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +46,8 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/wizard" element={<Wizard />} />
+          <Route path="/space-planner" element={<Wizard />} />
+          <Route path="/faq" element={<Faq />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/file-manager" element={<ProtectedRoute>
             <FileManager />
@@ -51,6 +57,10 @@ const App = () => (
           </ProtectedRoute>} />
 
           <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/closets" element={<Closets />} />
+          <Route path="/kitchens" element={<Kitchens />} />
+          <Route path="/garages" element={<Garages />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/gallery/:id" element={<GalleryDetailPage />} />

@@ -1,91 +1,226 @@
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, CheckCircle, CalendarCheck, Ruler, Palette, Hammer } from "lucide-react";
+import { motion } from "framer-motion";
+import CTABanner from "@/components/sections/CTABanner";
 import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { Process } from "@/components/Process";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import Footer from "@/components/layout/Footer";
 
-const HowItWorks = () => {
+const steps = [
+  {
+    number: "01",
+    title: "Book a Free Consultation",
+    description: "Start with a complimentary design consultation — either in your home or via video call. Our experts will walk through your space, understand your lifestyle, and begin mapping your ideal closet system.",
+    detail: "No commitment required. Just a conversation.",
+    image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&h=600&fit=crop",
+    duration: "60–90 min",
+    icon: CalendarCheck
+  },
+  {
+    number: "02",
+    title: "Receive Your Custom 3D Design",
+    description: "Within 5 business days, your dedicated designer will present a full 3D visualization of your closet system — complete with material choices, hardware options, and itemized pricing.",
+    detail: "Revise until it's perfect. We don't build until you're thrilled.",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop",
+    duration: "5 business days",
+    icon: Ruler
+  },
+  {
+    number: "03",
+    title: "Approve & Schedule Installation",
+    description: "Once you approve the design, we order your custom materials and schedule your installation date. We handle everything — no contractors, no coordination headaches.",
+    detail: "Typical lead time: 3–4 weeks from approval.",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
+    duration: "3–4 weeks lead time",
+    icon: Palette
+  },
+  {
+    number: "04",
+    title: "Expert Installation",
+    description: "Our master installation team arrives on the scheduled day and completes your project with surgical precision. Most installations are done in a single day, with zero disruption to your home.",
+    detail: "All debris removed. All surfaces protected.",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+    duration: "1–3 days",
+    icon: Hammer
+  },
+  {
+    number: "05",
+    title: "The Perfect Reveal",
+    description: "Walk into your transformed space and experience the Design & Supply difference. A dedicated team member conducts your final walkthrough, explains every feature, and ensures you're completely satisfied.",
+    detail: "10-year structural warranty. Lifetime design support.",
+    image: "https://images.unsplash.com/photo-1615529182904-14819c35db37?w=800&h=600&fit=crop",
+    duration: "Handover day",
+    icon: CheckCircle
+  }
+];
+
+const includes = [
+  "Free in-home or video consultation",
+  "Full 3D design visualization",
+  "Itemized transparent pricing",
+  "Premium material samples",
+  "Expert installation team",
+  "10-year structural warranty",
+  "Post-install support",
+  "Lifetime design consultation access"
+];
+
+function TimelineStep({ step, index }: { step: typeof steps[number]; index: number }) {
+  const Icon = step.icon;
+  const isEven = index % 2 === 0;
+
   return (
-    <div className="min-h-screen">
-      <Navigation />
+    <motion.div
+      initial={{ opacity: 0, x: isEven ? -40 : 40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${!isEven ? "lg:flex lg:flex-row-reverse" : ""}`}
+    >
+      {/* Content */}
+      <div className="flex gap-6 w-full">
+        <div className="flex flex-col items-center shrink-0">
+          <div className="h-16 w-16 rounded-[22px] bg-[#B86B49] text-white flex items-center justify-center shrink-0 shadow-[0_10px_20px_rgba(184,107,73,0.15)]">
+            <Icon className="h-7 w-7" />
+          </div>
+          {index < steps.length - 1 && (
+            <div className="w-[2px] flex-1 bg-[#E5DCD0] mt-4 min-h-[80px]" />
+          )}
+        </div>
+        <div className="pb-12 flex-1">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-[#B86B49] text-xs font-semibold tracking-wider uppercase">
+              STEP {Number(step.number)}
+            </span>
+            <span className="text-[#8C867E] text-[10px] tracking-wider uppercase bg-[#F3EFE9] rounded-full px-3 py-1 font-medium">
+              {step.duration}
+            </span>
+          </div>
+          <h3 className="text-[#1A1A18] text-2xl font-bold mb-3" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+            {step.title}
+          </h3>
+          <p className="text-[#6F6762] text-sm leading-relaxed mb-4">{step.description}</p>
+          <p className="text-sm text-[#8A8179] leading-relaxed bg-[#F5EFE6] rounded-2xl p-5">
+            {step.detail}
+          </p>
+        </div>
+      </div>
 
-      {/* Hero Section */}
-      {/* <section className="pt-32 pb-16 bg-secondary">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Our Simple 4-Step Process
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              From initial consultation to final installation, we make transforming your space easy and stress-free
-            </p>
-            
+      {/* Image */}
+      <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl group w-full animate-fadeIn">
+        <Image
+          src={step.image}
+          alt={step.title}
+          fill
+          className="object-cover group-hover:scale-102 transition-transform duration-700"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+export default function HowItWorks() {
+  return (
+    <div className="min-h-screen flex flex-col justify-between">
+      <Navigation />
+      <div className="flex-grow">
+        {/* Hero */}
+        <div className="bg-[#1A1A18] pt-32 pb-24 px-6 lg:px-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="max-w-2xl">
+              <span className="text-[#C9A96E] text-xs tracking-[0.3em] uppercase block mb-4">The Process</span>
+              <h1
+                className="text-white font-light leading-tight mb-6"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)" }}
+              >
+                How Your Dream Closet<br />
+                <em className="text-[#C9A96E] not-italic">Comes to Life</em>
+              </h1>
+              <p className="text-white/50 text-sm leading-relaxed">
+                A transparent, stress-free journey from first conversation to final reveal. Our five-step process is designed around you.
+              </p>
+            </div>
           </div>
         </div>
-      </section> */}
 
-      {/* Process Section */}
-      <Process />
-      {/* <Link to="/">
-        <Button variant="accent" size="lg" className="text-lg group">
-          Get Started Today
-          <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-        </Button>
-      </Link> */}
-
-      {/* Additional Details */}
-      <section className="py-24 bg-background ">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold text-foreground mb-8 text-center">
-              Why Choose Our Process?
+        {/* Steps */}
+        <div className="bg-[#FAFAF7] py-24">
+          <div className="max-w-3xl mx-auto text-center mb-20 px-6">
+            <span className="text-[#B86B49] text-xs font-semibold tracking-[0.2em] uppercase block mb-4">
+              The Journey
+            </span>
+            <h2
+              className="text-[#1A1A18] font-bold mb-4"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(2.5rem, 5vw, 3.5rem)" }}
+            >
+              Your 5-Step Transformation
             </h2>
+            <p className="text-[#6B6B65] text-sm leading-relaxed max-w-xl mx-auto">
+              Every project follows our proven process — designed to be stress-free for you and deliver exceptional results every time.
+            </p>
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-card p-8 rounded-2xl border border-border shadow-sm">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">
-                  Personalized Service
-                </h3>
-                <p className="text-muted-foreground">
-                  Every project is unique, and we tailor our approach to your specific needs, style preferences, and budget requirements.
+          <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <div className="flex flex-col gap-12">
+              {steps.map((step, i) => (
+                <TimelineStep key={step.number} step={step} index={i} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Pricing Transparency */}
+        <div className="bg-[#F5F0E8] py-20">
+          <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <span className="text-[#C9A96E] text-xs tracking-[0.3em] uppercase block mb-4">Pricing</span>
+                <h2
+                  className="text-[#1A1A18] font-light text-3xl mb-6"
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                >
+                  Transparent Pricing.<br />No Surprises.
+                </h2>
+                <p className="text-[#6B6B65] text-sm leading-relaxed mb-6">
+                  Every project includes a fully itemized quote before any commitment. Our pricing is transparent, comprehensive, and guaranteed. What we quote is what you pay.
                 </p>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {[["$2,500+", "Sliding Wardrobes"], ["$4,500+", "Walk-in Closets"], ["$8,000+", "Dressing Rooms"], ["Custom", "Luxury Suites"]].map(([price, label]) => (
+                    <div key={label} className="bg-white p-5 border-l-2 border-[#C9A96E]">
+                      <span className="text-[#1A1A18] text-2xl font-light block" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{price}</span>
+                      <span className="text-[#6B6B65] text-xs tracking-wider">{label}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/wizard" className="group inline-flex items-center gap-3 bg-[#C9A96E] text-[#1A1A18] text-xs tracking-[0.2em] uppercase font-medium px-8 py-4 hover:bg-[#E8D5B0] transition-all duration-300">
+                  Get Your Free Quote
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
 
-              <div className="bg-card p-8 rounded-2xl border border-border shadow-sm">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">
-                  Quality Craftsmanship
+              {/* Included */}
+              <div className="bg-[#1A1A18] p-10">
+                <h3 className="text-white font-light text-xl mb-8" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                  Every Project Includes
                 </h3>
-                <p className="text-muted-foreground">
-                  We use premium materials and employ skilled craftsmen to ensure your custom design stands the test of time.
-                </p>
-              </div>
-
-              <div className="bg-card p-8 rounded-2xl border border-border shadow-sm">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">
-                  Transparent Pricing
-                </h3>
-                <p className="text-muted-foreground">
-                  No hidden fees or surprise charges. You'll receive a detailed quote before we begin, and we stick to it.
-                </p>
-              </div>
-
-              <div className="bg-card p-8 rounded-2xl border border-border shadow-sm">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">
-                  Timely Delivery
-                </h3>
-                <p className="text-muted-foreground">
-                  We respect your time and complete projects on schedule, keeping you informed every step of the way.
-                </p>
+                <div className="flex flex-col gap-4">
+                  {includes.map(item => (
+                    <div key={item} className="flex items-center gap-4">
+                      <CheckCircle size={16} className="text-[#C9A96E] flex-shrink-0" />
+                      <span className="text-white/70 text-sm">{item}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
+        <CTABanner />
+      </div>
       <Footer />
     </div>
   );
-};
-
-export default HowItWorks;
+}

@@ -5,27 +5,33 @@ interface ProgressBarProps {
   totalSteps: number;
 }
 
-export const ProgressBar = ({ currentStep, totalSteps }: ProgressBarProps) => {
-  const getStepColor = (index: number) => {
-    switch (index) {
-      case 0: return "bg-red-500";
-      case 1: return "bg-yellow-500";
-      case 2: return "bg-green-500";
-      default: return "bg-primary";
-    }
-  };
+const stepLabels = [
+  "Contact & Spaces",
+  "Draw & Measure",
+  "Review & Book",
+];
 
+export const ProgressBar = ({ currentStep, totalSteps }: ProgressBarProps) => {
   return (
     <div className="w-full mb-12">
-      <div className="flex items-center justify-between mb-4 gap-2">
-        {Array.from({ length: totalSteps }).map((_, index) => (
+      <div className="relative h-1 w-full bg-brand-border rounded-full">
+        <div
+          className="absolute top-0 left-0 h-1 bg-brand-copper rounded-full transition-all duration-500"
+          style={{ width: `${(currentStep / (totalSteps - 1)) * 100}%` }}
+        />
+      </div>
+      <div className="flex justify-between mt-2">
+        {stepLabels.map((label, index) => (
           <div
-            key={index}
+            key={label}
             className={cn(
-              "flex-1 h-2 rounded-full transition-all duration-500",
-              index <= currentStep ? getStepColor(index) : "bg-muted"
+              "text-xs text-center transition-colors duration-500",
+              index <= currentStep ? "text-brand-espresso font-medium" : "text-brand-muted"
             )}
-          />
+            style={{ flexBasis: '33.33%' }}
+          >
+            {label}
+          </div>
         ))}
       </div>
     </div>

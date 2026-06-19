@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Header } from "@/components/Header";
 import {
     Select,
     SelectContent,
@@ -572,7 +571,7 @@ const FileManager = () => {
             return <ImageIcon className="w-5 h-5 text-blue-500" />;
         }
         if (file.resource_type === "video") return <VideoIcon className="w-5 h-5 text-purple-500" />;
-        return <FileIcon className="w-5 h-5 text-muted-foreground" />;
+        return <FileIcon className="w-5 h-5 text-brand-muted" />;
     };
 
     const formatSize = (bytes: number) => {
@@ -590,33 +589,26 @@ const FileManager = () => {
 
     if (checkingAuth || !session) {
         return (
-            <>
-                <Header />
-                <div className="min-h-screen bg-background flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                </div>
-            </>
+            <div className="min-h-screen bg-brand-cream flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-brand-copper" />
+            </div>
         );
     }
 
     if (!isAdmin) {
         return (
-            <>
-                <Header />
-                <div className="min-h-screen bg-background flex items-center justify-center">
-                    <Card className="p-8 text-center">
-                        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-                        <p className="text-muted-foreground">Admin privileges required.</p>
-                    </Card>
-                </div>
-            </>
+            <div className="min-h-screen bg-brand-cream flex items-center justify-center px-6">
+                <Card className="p-8 text-center border-brand-border">
+                    <h2 className="text-2xl font-semibold text-brand-espresso mb-2">Access Denied</h2>
+                    <p className="text-brand-muted">Admin privileges required.</p>
+                </Card>
+            </div>
         );
     }
 
     return (
         <>
-            <Header />
-            <div className="min-h-screen bg-background py-8 px-4">
+            <div className="min-h-screen bg-brand-cream py-8 px-4">
                 <div className="max-w-5xl mx-auto space-y-6">
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -625,15 +617,15 @@ const FileManager = () => {
                                 <ArrowLeft className="w-5 h-5" />
                             </Button>
                             <div>
-                                <h1 className="text-3xl font-bold">File Manager</h1>
-                                <p className="text-muted-foreground text-sm">
+                                <h1 className="text-3xl font-semibold text-brand-espresso" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>File Manager</h1>
+                                <p className="text-brand-muted text-sm">
                                     Upload to Supabase Storage • Fast and reliable image storage
                                 </p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="icon" onClick={handleRefresh} disabled={refreshing}>
+                            <Button variant="outline" size="icon" onClick={handleRefresh} disabled={refreshing} className="border-brand-border text-brand-espresso hover:bg-brand-sand hover:text-brand-espresso">
                                 <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
                             </Button>
                             <Input
@@ -647,6 +639,7 @@ const FileManager = () => {
                             <Button
                                 onClick={() => document.getElementById("file-upload")?.click()}
                                 disabled={uploading}
+                                className="bg-brand-copper text-white hover:bg-brand-copper-dark"
                             >
                                 {uploading ? (
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -660,7 +653,7 @@ const FileManager = () => {
 
                     {/* Upload Progress */}
                     {uploadProgress.length > 0 && (
-                        <Card className="p-4 space-y-3">
+                        <Card className="p-4 space-y-3 border-brand-border bg-white">
                             <h3 className="font-semibold text-sm">Upload Progress</h3>
                             <div className="space-y-2">
                                 {uploadProgress.map((item, index) => (
@@ -672,17 +665,17 @@ const FileManager = () => {
                                                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                                                 )}
                                                 {item.status === "error" && (
-                                                    <XCircle className="w-4 h-4 text-destructive" />
+                                                    <XCircle className="w-4 h-4 text-red-600" />
                                                 )}
                                                 {item.status === "uploading" && (
-                                                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                                                    <Loader2 className="w-4 h-4 animate-spin text-brand-copper" />
                                                 )}
                                                 {item.status === "uploading" && `${item.progress}%`}
                                             </span>
                                         </div>
                                         {item.status === "uploading" && <Progress value={item.progress} className="h-2" />}
                                         {item.error && (
-                                            <p className="text-xs text-destructive">{item.error}</p>
+                                            <p className="text-xs text-red-600">{item.error}</p>
                                         )}
                                     </div>
                                 ))}
@@ -735,12 +728,12 @@ const FileManager = () => {
                     {/* File List */}
                     {loading ? (
                         <div className="flex items-center justify-center py-20">
-                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                            <Loader2 className="w-8 h-8 animate-spin text-brand-copper" />
                         </div>
                     ) : filteredFiles.length === 0 ? (
-                        <Card className="p-12 text-center">
-                            <FileIcon className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                            <p className="text-muted-foreground">
+                        <Card className="p-12 text-center border-brand-border bg-white">
+                            <FileIcon className="w-12 h-12 mx-auto mb-4 text-brand-muted" />
+                            <p className="text-brand-muted">
                                 {searchTerm || activeTab !== "all"
                                     ? "No files match your filters"
                                     : "No files yet. Upload your first file to Supabase Storage."}
@@ -749,12 +742,12 @@ const FileManager = () => {
                     ) : (
                         <div className="space-y-3">
                             {/* Stats Bar */}
-                            <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
+                            <div className="flex items-center justify-between text-sm text-brand-muted px-1">
                                 <span>{filteredFiles.length} file(s) shown</span>
                             </div>
 
                             {filteredFiles.map((file) => (
-                                <Card key={file.id} className="p-4 flex items-center justify-between gap-4">
+                                <Card key={file.id} className="p-4 flex items-center justify-between gap-4 border-brand-border bg-white">
                                     <div className="flex items-center gap-3 min-w-0">
                                         {getFileIcon(file)}
                                         <div className="min-w-0">
@@ -769,7 +762,7 @@ const FileManager = () => {
                                                     </Badge>
                                                 )}
                                             </div>
-                                            <p className="text-xs text-muted-foreground">
+                                            <p className="text-xs text-brand-muted">
                                                 {new Date(file.created_at).toLocaleDateString()}
                                             </p>
                                         </div>
@@ -806,7 +799,7 @@ const FileManager = () => {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => setShowDeleteConfirm(file)}
-                                            className="text-destructive hover:text-destructive"
+                                            className="text-red-600 hover:text-red-700"
                                             title="Delete"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -821,7 +814,7 @@ const FileManager = () => {
 
             {/* Preview Dialog */}
             <Dialog open={!!previewUrl} onOpenChange={() => setPreviewUrl(null)}>
-                <DialogContent className="max-w-5xl w-full">
+                <DialogContent className="max-w-5xl w-full bg-brand-cream border-brand-border">
                     <DialogHeader>
                         <DialogTitle>{previewName}</DialogTitle>
                     </DialogHeader>
@@ -840,7 +833,7 @@ const FileManager = () => {
 
             {/* Upload Dialog */}
             <Dialog open={showFolderDialog} onOpenChange={setShowFolderDialog}>
-                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-brand-cream border-brand-border">
                     <DialogHeader>
                         <DialogTitle>Upload Files</DialogTitle>
                         <DialogDescription>
@@ -868,7 +861,7 @@ const FileManager = () => {
                                             <SelectItem key={opt.value} value={opt.value}>
                                                 <span className="flex items-center gap-2">
                                                     {opt.label}
-                                                    <span className="text-muted-foreground text-xs">
+                                                    <span className="text-brand-muted text-xs">
                                                         ({stats.count} files)
                                                     </span>
                                                 </span>
@@ -912,14 +905,14 @@ const FileManager = () => {
                                 {pendingFilesArray.length > 0 && (
                                     <div className="space-y-2">
                                         <Label>Image Preview</Label>
-                                        <div className="rounded-lg border overflow-hidden bg-muted">
+                                        <div className="rounded-lg border overflow-hidden bg-brand-sand-light">
                                             <img
                                                 src={URL.createObjectURL(pendingFilesArray[0])}
                                                 alt="Preview"
                                                 className="w-full h-48 object-cover"
                                             />
                                         </div>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-xs text-brand-muted">
                                             {pendingFilesArray[0].name} ({formatSize(pendingFilesArray[0].size)})
                                         </p>
                                     </div>
@@ -971,14 +964,14 @@ const FileManager = () => {
                                 {pendingFilesArray.length > 0 && (
                                     <div className="space-y-2">
                                         <Label>Image Preview</Label>
-                                        <div className="rounded-lg border overflow-hidden bg-muted">
+                                        <div className="rounded-lg border overflow-hidden bg-brand-sand-light">
                                             <img
                                                 src={URL.createObjectURL(pendingFilesArray[0])}
                                                 alt="Preview"
                                                 className="w-full h-48 object-cover"
                                             />
                                         </div>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-xs text-brand-muted">
                                             {pendingFilesArray[0].name} ({formatSize(pendingFilesArray[0].size)})
                                         </p>
                                     </div>
@@ -1030,7 +1023,7 @@ const FileManager = () => {
                                     <div className="space-y-2">
                                         <Label>Before Image *</Label>
                                         <div
-                                            className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 overflow-hidden relative"
+                                            className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-brand-sand-light/50 overflow-hidden relative"
                                             onClick={() => document.getElementById('before-file-input')?.click()}
                                         >
                                             {pendingBeforeFile ? (
@@ -1041,8 +1034,8 @@ const FileManager = () => {
                                                 />
                                             ) : (
                                                 <>
-                                                    <Upload className="w-6 h-6 text-muted-foreground" />
-                                                    <span className="text-xs text-muted-foreground font-medium">Select Before</span>
+                                                    <Upload className="w-6 h-6 text-brand-muted" />
+                                                    <span className="text-xs text-brand-muted font-medium">Select Before</span>
                                                 </>
                                             )}
                                         </div>
@@ -1054,14 +1047,14 @@ const FileManager = () => {
                                             onChange={(e) => setPendingBeforeFile(e.target.files?.[0] || null)}
                                         />
                                         {pendingBeforeFile && (
-                                            <p className="text-[10px] text-muted-foreground truncate">{pendingBeforeFile.name}</p>
+                                            <p className="text-[10px] text-brand-muted truncate">{pendingBeforeFile.name}</p>
                                         )}
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label>After Image *</Label>
                                         <div
-                                            className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 overflow-hidden relative"
+                                            className="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-brand-sand-light/50 overflow-hidden relative"
                                             onClick={() => document.getElementById('after-file-input')?.click()}
                                         >
                                             {pendingAfterFile ? (
@@ -1072,8 +1065,8 @@ const FileManager = () => {
                                                 />
                                             ) : (
                                                 <>
-                                                    <Upload className="w-6 h-6 text-muted-foreground" />
-                                                    <span className="text-xs text-muted-foreground font-medium">Select After</span>
+                                                    <Upload className="w-6 h-6 text-brand-muted" />
+                                                    <span className="text-xs text-brand-muted font-medium">Select After</span>
                                                 </>
                                             )}
                                         </div>
@@ -1085,7 +1078,7 @@ const FileManager = () => {
                                             onChange={(e) => setPendingAfterFile(e.target.files?.[0] || null)}
                                         />
                                         {pendingAfterFile && (
-                                            <p className="text-[10px] text-muted-foreground truncate">{pendingAfterFile.name}</p>
+                                            <p className="text-[10px] text-brand-muted truncate">{pendingAfterFile.name}</p>
                                         )}
                                     </div>
                                 </div>
@@ -1129,14 +1122,14 @@ const FileManager = () => {
 
                                 {/* Selected Files Preview */}
                                 <div className="rounded-md border p-3 max-h-32 overflow-auto space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                                    <p className="text-xs font-medium text-brand-muted mb-1">
                                         Selected file(s):
                                     </p>
                                     {pendingFilesArray.map((file, index) => (
                                         <div key={index} className="flex items-center gap-2 text-sm">
-                                            <ImageIcon className="w-3 h-3 shrink-0 text-muted-foreground" />
+                                            <ImageIcon className="w-3 h-3 shrink-0 text-brand-muted" />
                                             <span className="truncate">{file.name}</span>
-                                            <span className="text-muted-foreground text-xs shrink-0">
+                                            <span className="text-brand-muted text-xs shrink-0">
                                                 ({formatSize(file.size)})
                                             </span>
                                         </div>
@@ -1180,7 +1173,7 @@ const FileManager = () => {
 
             {/* Delete Confirmation Dialog */}
             <Dialog open={!!showDeleteConfirm} onOpenChange={() => setShowDeleteConfirm(null)}>
-                <DialogContent className="max-w-sm">
+                <DialogContent className="max-w-sm bg-brand-cream border-brand-border">
                     <DialogHeader>
                         <DialogTitle>Confirm Deletion</DialogTitle>
                         <DialogDescription>

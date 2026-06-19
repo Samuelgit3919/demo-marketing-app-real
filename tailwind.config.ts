@@ -13,7 +13,25 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        serif: ["Playfair Display", "serif"],
+        sans: ["Outfit", "sans-serif"],
+      },
       colors: {
+        brand: {
+          cream: "hsl(var(--brand-cream) / <alpha-value>)",
+          sand: "hsl(var(--brand-sand) / <alpha-value>)",
+          "sand-light": "hsl(var(--brand-sand-light) / <alpha-value>)",
+          border: "hsl(var(--brand-border) / <alpha-value>)",
+          espresso: "hsl(var(--brand-espresso) / <alpha-value>)",
+          muted: "hsl(var(--brand-muted) / <alpha-value>)",
+          copper: {
+            DEFAULT: "hsl(var(--brand-copper) / <alpha-value>)",
+            dark: "hsl(var(--brand-copper-dark) / <alpha-value>)",
+            light: "hsl(var(--brand-copper-light) / <alpha-value>)",
+          },
+          ink: "hsl(var(--brand-ink) / <alpha-value>)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

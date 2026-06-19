@@ -1,37 +1,9 @@
 import { useState, useEffect } from "react";
+import { Navigation } from "@/components/Navigation";
 import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { StepOne } from "@/components/wizard/StepOne";
 import { StepTwo } from "@/components/wizard/StepTwo";
 import { StepThree } from "@/components/wizard/StepThree";
-import { Card } from "@/components/ui/card";
-import { Header } from "@/components/Header";
-import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
-
-const LanguageToggle = () => {
-  const { language, setLanguage } = useLanguage();
-  return (
-    <div className="flex items-center gap-1 bg-muted rounded-full p-1">
-      <Button
-        variant={language === "en" ? "default" : "ghost"}
-        size="sm"
-        className="rounded-full px-3 h-7 text-xs font-semibold"
-        onClick={() => setLanguage("en")}
-      >
-        EN
-      </Button>
-      <Button
-        variant={language === "fr" ? "default" : "ghost"}
-        size="sm"
-        className="rounded-full px-3 h-7 text-xs font-semibold"
-        onClick={() => setLanguage("fr")}
-      >
-        FR
-      </Button>
-    </div>
-  );
-};
-
 
 export interface UploadedFile {
   file: File;
@@ -41,75 +13,109 @@ export interface UploadedFile {
   filePath?: string;
 }
 
-const WizardContent = () => {
-  const { t } = useLanguage();
+export interface Space {
+  id: string;
+  name: string;
+  type: "Closet" | "Kitchen" | "Garage";
+  ceilingHeight: string;
+  drawingData?: string;
+  wallMeasurements?: Array<{ label: string; length: string }>;
+  unit?: "cm" | "in";
+  totalPerimeter?: number;
+  totalArea?: number;
+}
+
+const STORAGE_KEYS = {
+  step: "wizardStep",
+  formData: "wizardFormData",
+  spaces: "wizardSpaces",
+  notes: "wizardNotes",
+};
+
+const INITIAL_FORM = {
+  fullName: "",
+  email: "",
+  phone: "",
+  postalCode: "",
+};
+
+const Wizard = () => {
   const [currentStep, setCurrentStep] = useState(() => {
-    const saved = localStorage.getItem("wizardStep");
+    const saved = localStorage.getItem(STORAGE_KEYS.step);
     return saved ? parseInt(saved) : 0;
   });
 
   const [formData, setFormData] = useState(() => {
-    const saved = localStorage.getItem("wizardFormData");
-    return saved ? JSON.parse(saved) : {
-      fullName: "",
-      email: "",
-      phone: "",
-      postalCode: "",
-    };
+    const saved = localStorage.getItem(STORAGE_KEYS.formData);
+    return saved ? JSON.parse(saved) : INITIAL_FORM;
   });
 
-  const [spaces, setSpaces] = useState<any[]>(() => {
-    const saved = localStorage.getItem("wizardSpaces");
+  const [spaces, setSpaces] = useState<Space[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.spaces);
     return saved ? JSON.parse(saved) : [];
   });
 
   const [files, setFiles] = useState<UploadedFile[]>([]);
 
-  const [storagePriorities, setStoragePriorities] = useState<string[]>(() => {
-    const saved = localStorage.getItem("wizardPriorities");
-    return saved ? JSON.parse(saved) : [];
-  });
-
   const [additionalNotes, setAdditionalNotes] = useState(() => {
-    const saved = localStorage.getItem("wizardNotes");
-    return saved ? saved : "";
+    const saved = localStorage.getItem(STORAGE_KEYS.notes);
+    return saved || "";
   });
 
-  // Auto-save to localStorage
-  useEffect(() => { localStorage.setItem("wizardStep", currentStep.toString()); }, [currentStep]);
-  useEffect(() => { localStorage.setItem("wizardFormData", JSON.stringify(formData)); }, [formData]);
-  useEffect(() => { localStorage.setItem("wizardSpaces", JSON.stringify(spaces)); }, [spaces]);
-  useEffect(() => { localStorage.setItem("wizardPriorities", JSON.stringify(storagePriorities)); }, [storagePriorities]);
-  useEffect(() => { localStorage.setItem("wizardNotes", additionalNotes); }, [additionalNotes]);
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.step, currentStep.toString());
+  }, [currentStep]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.formData, JSON.stringify(formData));
+  }, [formData]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.spaces, JSON.stringify(spaces));
+  }, [spaces]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.notes, additionalNotes);
+  }, [additionalNotes]);
+
+  const clearStorage = () => {
+    Object.values(STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
+  };
 
   const handleComplete = () => {
-    localStorage.removeItem("wizardStep");
-    localStorage.removeItem("wizardFormData");
-    localStorage.removeItem("wizardSpaces");
-    localStorage.removeItem("wizardPriorities");
-    localStorage.removeItem("wizardNotes");
+    clearStorage();
     window.location.href = "/";
   };
 
   return (
-    <>
-      <Header />
-      <div className="min-h-screen bg-background py-2 md:py-8 px-1 md:px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-6 md:mb-12 px-2">
-            <div className="flex justify-end mb-4">
-              <LanguageToggle />
-            </div>
-            <h1 className="text-2xl md:text-4xl font-bold mb-2">{t("wizard.title")}</h1>
+    <div className="min-h-screen bg-brand-cream">
+      <Navigation />
+      <div className="pt-24 pb-8 px-4 md:px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <span className="text-brand-copper text-xs tracking-[0.3em] uppercase block mb-3">
+              Online Design Platform
+            </span>
+            <h1
+              className="text-brand-espresso font-light leading-tight"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              }}
+            >
+              3-Step Space Planner
+            </h1>
           </div>
 
           <ProgressBar currentStep={currentStep} totalSteps={3} />
 
-          <Card className="p-2 md:p-8 lg:p-12 shadow-card">
+          <div className="bg-white rounded-2xl border border-brand-border shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] p-6 md:p-10">
             {currentStep === 0 && (
               <StepOne
                 formData={formData}
                 setFormData={setFormData}
+                spaces={spaces}
+                setSpaces={setSpaces}
                 onNext={() => setCurrentStep(1)}
               />
             )}
@@ -121,8 +127,6 @@ const WizardContent = () => {
                 setSpaces={setSpaces}
                 files={files}
                 setFiles={setFiles}
-                storagePriorities={storagePriorities}
-                setStoragePriorities={setStoragePriorities}
                 additionalNotes={additionalNotes}
                 setAdditionalNotes={setAdditionalNotes}
                 onNext={() => setCurrentStep(2)}
@@ -135,24 +139,16 @@ const WizardContent = () => {
                 formData={formData}
                 spaces={spaces}
                 files={files}
-                storagePriorities={storagePriorities}
                 additionalNotes={additionalNotes}
                 onBack={() => setCurrentStep(1)}
                 onComplete={handleComplete}
               />
             )}
-
-          </Card>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
-
-const Wizard = () => (
-  <LanguageProvider>
-    <WizardContent />
-  </LanguageProvider>
-);
 
 export default Wizard;
