@@ -1,24 +1,65 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { galleryItems, galleryCategories } from "@/data/gallery";
+import { ArrowRight, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
+import { imageService, type GalleryViewItem } from "@/lib/imageService";
 
 export default function Gallery() {
+  const [items, setItems] = useState<GalleryViewItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [activeAlbum, setActiveAlbum] = useState<typeof galleryItems[number] | null>(null);
+  const [activeAlbum, setActiveAlbum] = useState<GalleryViewItem | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(9);
 
+  useEffect(() => {
+    imageService.fetchGalleryProjects()
+      .then(data => {
+        setItems(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load gallery:", err);
+        setError("Failed to load gallery. Please try again later.");
+        setLoading(false);
+      });
+  }, []);
+
+  // Derive categories from items (unique categories, with "All" first)
+  const categories = ["All", ...Array.from(new Set(items.map(i => i.category))).sort()];
+
   const filtered = activeCategory === "All"
-    ? galleryItems
-    : galleryItems.filter(item => item.category === activeCategory);
+    ? items
+    : items.filter(item => item.category === activeCategory);
 
   const visible = filtered.slice(0, visibleCount);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col justify-between">
+        <Navigation />
+        <div className="flex-grow flex items-center justify-center bg-[#FAFAF7]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#C9A96E]" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col justify-between">
+        <Navigation />
+        <div className="flex-grow flex items-center justify-center bg-[#FAFAF7]">
+          <p className="text-[#6B6B65]">{error}</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
@@ -44,7 +85,7 @@ export default function Gallery() {
         <div className="bg-[#FAFAF7] border-b border-[#EBEBDF] sticky top-20 z-30">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="flex gap-0 overflow-x-auto scrollbar-hide">
-              {galleryCategories.map(cat => (
+              {categories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => { setActiveCategory(cat); setVisibleCount(9); }}
@@ -64,44 +105,50 @@ export default function Gallery() {
         {/* Gallery Grid */}
         <div className="bg-[#FAFAF7] py-16">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-              {visible.map((item) => (
-                <div key={item.id} className="break-inside-avoid group relative overflow-hidden bg-white">
-                  <div
-                    className="relative overflow-hidden cursor-pointer"
-                    onClick={() => {
-                      setActiveAlbum(item);
-                      setActiveImageIndex(0);
-                    }}
-                  >
-                    <Image
-                      src={item.thumbnail}
-                      alt={item.title}
-                      width={600}
-                      height={700}
-                      className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-[#1A1A18]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-start justify-end p-6">
-                      <span className="text-[#C9A96E] text-[10px] tracking-[0.2em] uppercase mb-2">{item.category}</span>
-                      <h3 className="text-white font-light text-lg" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-                        {item.title}
-                      </h3>
+            {visible.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-[#6B6B65]">No projects found in this category.</p>
+              </div>
+            ) : (
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                {visible.map((item) => (
+                  <div key={item.id} className="break-inside-avoid group relative overflow-hidden bg-white">
+                    <div
+                      className="relative overflow-hidden cursor-pointer"
+                      onClick={() => {
+                        setActiveAlbum(item);
+                        setActiveImageIndex(0);
+                      }}
+                    >
+                      <Image
+                        src={item.thumbnail}
+                        alt={item.title}
+                        width={600}
+                        height={700}
+                        className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-[#1A1A18]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-start justify-end p-6">
+                        <span className="text-[#C9A96E] text-[10px] tracking-[0.2em] uppercase mb-2">{item.category}</span>
+                        <h3 className="text-white font-light text-lg" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                          {item.title}
+                        </h3>
+                      </div>
+                    </div>
+                    {/* View Project link */}
+                    <div className="p-4 flex items-center justify-between border-t border-[#EBEBDF]">
+                      <span className="text-[#1A1A18] text-sm font-light">{item.title}</span>
+                      <Link
+                        href={`/gallery/${item.slug}`}
+                        className="group/link inline-flex items-center gap-2 text-[#C9A96E] text-[10px] tracking-[0.15em] uppercase hover:gap-3 transition-all"
+                      >
+                        View <ArrowRight size={12} />
+                      </Link>
                     </div>
                   </div>
-                  {/* View Project link */}
-                  <div className="p-4 flex items-center justify-between border-t border-[#EBEBDF]">
-                    <span className="text-[#1A1A18] text-sm font-light">{item.title}</span>
-                    <Link
-                      href={`/gallery/${item.slug}`}
-                      className="group/link inline-flex items-center gap-2 text-[#C9A96E] text-[10px] tracking-[0.15em] uppercase hover:gap-3 transition-all"
-                    >
-                      View <ArrowRight size={12} />
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Load More */}
             {visibleCount < filtered.length && (

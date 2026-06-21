@@ -85,7 +85,7 @@ export const Navigation = () => {
           </div>
 
           {/* Column 2: Center Navigation Links (desktop) */}
-          <div className="hidden lg:flex justify-center items-center gap-6">
+          <div className="hidden lg:flex justify-center items-center gap-6 min-w-max">
             {desktopLinks.map((link) => {
               if (link.type === "dropdown") {
                 return (
@@ -101,7 +101,9 @@ export const Navigation = () => {
                       {link.label}
                       <span className="absolute bottom-0 left-0 h-[2px] bg-brand-copper transition-all duration-300 w-0 group-hover:w-full" />
                     </button>
-                    <div className="absolute left-1/2 top-full mt-3 w-44 -translate-x-1/2 rounded-xl border border-brand-border bg-white shadow-lg opacity-0 translate-y-2 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto">
+                    {/* Invisible hover bridge fills the gap so cursor doesn't leave the group */}
+                    <div className="absolute left-0 top-full w-full h-3" />
+                    <div className="absolute left-1/2 top-[calc(100%+12px)] w-44 -translate-x-1/2 rounded-xl border border-brand-border bg-white shadow-lg opacity-0 translate-y-2 pointer-events-none transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto">
                       <div className="py-2">
                         {servicesLinks.map((service) => (
                           <Link

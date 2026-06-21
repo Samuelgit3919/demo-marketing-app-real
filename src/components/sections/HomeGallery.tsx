@@ -1,30 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import SectionWrapper from "@/components/ui/SectionWrapper";
-import { galleryItems } from "@/data/gallery";
+import { imageService, type GalleryViewItem } from "@/lib/imageService";
 
 const filters = ["All", "Closets", "Kitchens", "Garages", "Before & After"] as const;
 type Filter = (typeof filters)[number];
 
-// Map the existing gallery categories into the homepage filter groups.
-function groupFor(category: string): Filter {
-  const c = category.toLowerCase();
-  if (c.includes("kitchen")) return "Kitchens";
-  if (c.includes("garage")) return "Garages";
+// Map gallery types into the homepage filter groups.
+function groupFor(item: GalleryViewItem): Filter {
+  const t = item.type.toLowerCase();
+  if (t === "kitchen") return "Kitchens";
+  if (t === "garage") return "Garages";
   return "Closets";
 }
 
 export default function HomeGallery() {
   const [active, setActive] = useState<Filter>("All");
+  const [items, setItems] = useState<GalleryViewItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const items =
+  useEffect(() => {
+    imageService.fetchGalleryProjects()
+      .then(data => {
+        setItems(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to load gallery for homepage:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const filtered =
     active === "All"
-      ? galleryItems
-      : galleryItems.filter((item) => groupFor(item.category) === active);
+      ? items
+      : items.filter((item) => groupFor(item) === active);
 
   return (
     <SectionWrapper className="bg-brand-sand py-24 lg:py-32">
@@ -58,9 +72,13 @@ export default function HomeGallery() {
         </div>
 
         {/* Grid */}
-        {items.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-6 h-6 animate-spin text-brand-copper" />
+          </div>
+        ) : filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.slice(0, 6).map((item) => (
+            {filtered.slice(0, 6).map((item) => (
               <Link
                 key={item.id}
                 href={`/gallery/${item.slug}`}
