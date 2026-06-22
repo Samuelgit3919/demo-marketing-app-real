@@ -34,11 +34,10 @@ export default function Footer() {
             <h4 className="text-white text-xs tracking-[0.2em] uppercase font-medium mb-6">Services</h4>
             <ul className="space-y-3">
               {[
-                ["Walk-in Closets", "/services/walk-in-closets"],
-                ["Sliding Wardrobes", "/services/sliding-wardrobes"],
-                ["Luxury Dressing Rooms", "/services/luxury-dressing-rooms"],
-                ["Kids Closet Systems", "/services/kids-closet-systems"],
-                ["Office Storage", "/services/office-storage-closets"],
+                ["Closets", "/closets"],
+                ["Kitchen Cabinets", "/kitchens"],
+                ["Luxury Dressing Rooms", "/closets"],
+                ["Garage Storage", "/garages"],
               ].map(([label, href]) => (
                 <li key={href}>
                   <Link href={href} className="text-sm hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
@@ -101,7 +100,7 @@ export default function Footer() {
               </li>
               <li className="flex gap-3 items-start">
                 <Mail size={14} className="mt-0.5 text-[#C9A96E] flex-shrink-0" />
-                <span className="text-sm">hello@designandsupply.com</span>
+                <span className="text-sm">designwithsupply@gmail.com</span>
               </li>
               <li className="flex gap-3 items-start">
                 <MapPin size={14} className="mt-0.5 text-[#C9A96E] flex-shrink-0" />
