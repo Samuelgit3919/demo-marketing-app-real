@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { GalleryItem } from "@/types";
@@ -14,6 +15,16 @@ interface GalleryAlbumViewerProps {
 
 export default function GalleryAlbumViewer({ item, related }: GalleryAlbumViewerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const location = useLocation();
+
+  const backLink = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const from = params.get("from");
+    if (from === "closet") return { href: "/closets", label: "Back to Closets" };
+    if (from === "kitchen") return { href: "/kitchens", label: "Back to Kitchens" };
+    if (from === "garage") return { href: "/garages", label: "Back to Garages" };
+    return { href: "/gallery", label: "Back to Gallery" };
+  }, [location.search]);
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev === item.images.length - 1 ? 0 : prev + 1));
@@ -45,11 +56,11 @@ export default function GalleryAlbumViewer({ item, related }: GalleryAlbumViewer
         {/* Back navigation link */}
         <div className="mb-10">
           <Link
-            href="/gallery"
+            href={backLink.href}
             className="inline-flex items-center gap-2 text-[#6B6B65] text-xs tracking-[0.2em] uppercase hover:text-[#C9A96E] transition-colors group"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-            Back to Gallery
+            {backLink.label}
           </Link>
         </div>
 
@@ -185,7 +196,7 @@ export default function GalleryAlbumViewer({ item, related }: GalleryAlbumViewer
             {/* CTA action buttons */}
             <div className="mt-8 border-t border-[#EBEBDF] pt-6">
               <Link
-                href="/wizard"
+                href="/space-planner"
                 className="group flex items-center justify-between bg-[#C9A96E] text-[#1A1A18] text-xs tracking-[0.2em] uppercase font-medium px-6 py-4 hover:bg-[#E8D5B0] transition-colors duration-300 w-full"
               >
                 Get This Design

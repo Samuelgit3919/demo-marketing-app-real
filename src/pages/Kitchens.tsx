@@ -1,9 +1,14 @@
-import Image from "next/image";
+"use client";
+
+import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
+import HeroSlideshow, { type SlideImage } from "@/components/sections/HeroSlideshow";
+import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
+import { useServicePageProjects } from "@/hooks/useServicePageProjects";
 
 const steps = [
   "Measure your kitchen with our 3-Step Space Planner",
@@ -21,7 +26,11 @@ const features = [
   "Fully assembled cabinet supply",
 ];
 
+const HERO_FALLBACK = "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=900&fit=crop";
+
 export default function Kitchens() {
+  const { projects, loading } = useServicePageProjects("kitchen");
+
   return (
     <div className="min-h-screen bg-brand-cream">
       <Navigation />
@@ -41,12 +50,10 @@ export default function Kitchens() {
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border shadow-[0_16px_40px_-12px_rgba(45,36,30,0.2)]">
-              <Image src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=900&fit=crop" alt="Custom kitchen cabinet layout" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
-            </div>
           </div>
         </section>
+
+        <ServiceProjectGrid projects={projects} loading={loading} type="kitchen" />
 
         <section className="bg-brand-sand px-6 lg:px-10 py-14">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
