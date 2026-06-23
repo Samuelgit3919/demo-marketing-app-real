@@ -1,9 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
+import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
+import { useServicePageProjects } from "@/hooks/useServicePageProjects";
 
 const steps = [
   "Measure your garage with our 3-Step Space Planner",
@@ -21,7 +25,12 @@ const features = [
   "Fully assembled cabinet supply",
 ];
 
+const HERO_FALLBACK = "https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=1200&h=900&fit=crop";
+
 export default function Garages() {
+  const { projects, loading, firstProject } = useServicePageProjects("garage");
+  const heroSrc = firstProject?.thumbnail || HERO_FALLBACK;
+
   return (
     <div className="min-h-screen bg-brand-cream">
       <Navigation />
@@ -43,10 +52,12 @@ export default function Garages() {
             </div>
 
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-brand-border shadow-[0_16px_40px_-12px_rgba(45,36,30,0.2)]">
-              <Image src="https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=1200&h=900&fit=crop" alt="Garage cabinet and storage system" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
+              <Image src={heroSrc} alt="Garage cabinet and storage system" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
             </div>
           </div>
         </section>
+
+        <ServiceProjectGrid projects={projects} loading={loading} type="garage" />
 
         <section className="bg-brand-sand px-6 lg:px-10 py-14">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
