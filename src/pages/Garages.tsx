@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
 import { useServicePageProjects } from "@/hooks/useServicePageProjects";
+import garageImage from "@/assets/images/garage_service.jpg";
 
 const steps = [
   "Measure your garage with our 3-Step Space Planner",
@@ -25,11 +26,9 @@ const features = [
   "Fully assembled cabinet supply",
 ];
 
-const HERO_FALLBACK = "https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=1200&h=900&fit=crop";
-
 export default function Garages() {
   const { projects, loading, firstProject } = useServicePageProjects("garage");
-  const heroSrc = firstProject?.thumbnail || HERO_FALLBACK;
+  const heroSrc = firstProject?.thumbnail || garageImage;
 
   return (
     <div className="min-h-screen bg-brand-cream">

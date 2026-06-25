@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ interface AdminTopBarProps {
 
 export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = async () => {
         try {
@@ -22,6 +23,15 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
     };
 
     const logout = onLogout || handleLogout;
+
+    const navLinks = [
+        { to: "/admin", label: "Submissions" },
+        { to: "/admin/faqs", label: "FAQs" },
+        { to: "/admin/testimonials", label: "Testimonials" },
+        { to: "/file-manager", label: "File Manager" },
+    ];
+
+    const isActive = (path: string) => location.pathname === path;
 
     return (
         <div className="border-b border-brand-border bg-white/90 backdrop-blur-sm">
@@ -41,6 +51,21 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
                 >
                     Logout
                 </Button>
+            </div>
+            <div className="max-w-7xl mx-auto px-4 md:px-6 pb-3 flex items-center gap-1">
+                {navLinks.map((link) => (
+                    <Link
+                        key={link.to}
+                        to={link.to}
+                        className={`text-[11px] tracking-[0.15em] uppercase px-3 py-1.5 rounded transition-colors ${
+                            isActive(link.to)
+                                ? "bg-brand-copper/10 text-brand-copper font-medium"
+                                : "text-brand-muted hover:text-brand-espresso hover:bg-brand-sand"
+                        }`}
+                    >
+                        {link.label}
+                    </Link>
+                ))}
             </div>
         </div>
     );

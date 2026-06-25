@@ -5,6 +5,11 @@ import { motion } from "framer-motion";
 import CTABanner from "@/components/sections/CTABanner";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
+import step1Image from "@/assets/images/step1.jpg";
+import step2Image from "@/assets/images/step2.jpg";
+import step3Image from "@/assets/images/step3.jpg";
+import step4Image from "@/assets/images/step4.jpg";
+import step5Image from "@/assets/images/step5.jpg";
 
 const steps = [
   {
@@ -12,7 +17,7 @@ const steps = [
     title: "Book a Free Consultation",
     description: "Start with a complimentary design consultation — either in your home or via video call. Our experts will walk through your space, understand your lifestyle, and begin mapping your ideal closet system.",
     detail: "No commitment required. Just a conversation.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+    image: step1Image,
     duration: "60–90 min",
     icon: CalendarCheck
   },
@@ -21,7 +26,7 @@ const steps = [
     title: "Receive Your Custom 3D Design",
     description: "Within 5 business days, your dedicated designer will present a full 3D visualization of your closet system — complete with material choices, hardware options, and itemized pricing.",
     detail: "Revise until it's perfect. We don't build until you're thrilled.",
-    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=600&fit=crop",
+    image: step2Image,
     duration: "5 business days",
     icon: Ruler
   },
@@ -30,7 +35,7 @@ const steps = [
     title: "Approve & Schedule Installation",
     description: "Once you approve the design, we order your custom materials and schedule your installation date. We handle everything — no contractors, no coordination headaches.",
     detail: "Typical lead time: 3–4 weeks from approval.",
-    image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&h=600&fit=crop",
+    image: step3Image,
     duration: "3–4 weeks lead time",
     icon: Palette
   },
@@ -39,7 +44,7 @@ const steps = [
     title: "Expert Installation",
     description: "Our master installation team arrives on the scheduled day and completes your project with surgical precision. Most installations are done in a single day, with zero disruption to your home.",
     detail: "All debris removed. All surfaces protected.",
-    image: "https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=800&h=600&fit=crop",
+    image: step4Image,
     duration: "1–3 days",
     icon: Hammer
   },
@@ -48,7 +53,7 @@ const steps = [
     title: "The Perfect Reveal",
     description: "Walk into your transformed space and experience the Design & Supply difference. A dedicated team member conducts your final walkthrough, explains every feature, and ensures you're completely satisfied.",
     detail: "10-year structural warranty. Lifetime design support.",
-    image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&h=600&fit=crop",
+    image: step5Image,
     duration: "Handover day",
     icon: CheckCircle
   }

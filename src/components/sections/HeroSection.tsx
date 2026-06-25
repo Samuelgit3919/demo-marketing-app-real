@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import heroImage from "@/assets/images/hero_image.jpg";
 
 export default function HeroSection() {
   const [loaded, setLoaded] = useState(false);
@@ -18,11 +19,11 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop&q=85"
+          src={heroImage}
           alt="Custom designed walk-in closet, kitchen and garage storage"
           fill
           priority
-          className={`object-cover transition-all duration-[2s] ${loaded ? "scale-100 opacity-60" : "scale-105 opacity-0"}`}
+          className={`object-cover transition-opacity duration-[1.5s] ${loaded ? "opacity-60" : "opacity-0"}`}
           sizes="100vw"
         />
         {/* Gradient overlays */}

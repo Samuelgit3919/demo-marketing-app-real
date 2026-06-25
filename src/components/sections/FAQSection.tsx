@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Plus, Minus, ArrowRight } from "lucide-react";
 import SectionWrapper from "@/components/ui/SectionWrapper";
-import { faqs } from "@/data/faq";
-import Link from "next/link";
+import { useFAQs } from "@/hooks/useFAQs";
+import Link from "@/shims/next-link";
 
 interface FAQSectionProps {
   limit?: number;
@@ -13,7 +13,11 @@ interface FAQSectionProps {
 
 export default function FAQSection({ limit, showViewAllButton = false }: FAQSectionProps) {
   const [open, setOpen] = useState<string | null>(null);
+  const { faqs, isLoading } = useFAQs();
   const displayedFaqs = typeof limit === "number" ? faqs.slice(0, limit) : faqs;
+
+  if (isLoading) return null;
+  if (faqs.length === 0) return null;
 
   return (
     <SectionWrapper className="bg-brand-cream py-24 lg:py-32">
@@ -78,6 +82,22 @@ export default function FAQSection({ limit, showViewAllButton = false }: FAQSect
                 </Link>
               </div>
             )}
+
+            <div className="text-center py-6 mt-4 border-t border-brand-border">
+              <p
+                className="text-brand-espresso font-light mb-3"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "1.1rem" }}
+              >
+                Still have questions?
+              </p>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 text-brand-copper text-xs tracking-[0.2em] uppercase hover:gap-3 transition-all duration-300"
+              >
+                Contact Us
+                <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

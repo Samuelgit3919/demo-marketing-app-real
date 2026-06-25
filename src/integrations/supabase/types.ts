@@ -59,6 +59,81 @@ export type Database = {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          answer: string
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean
+          order_index: number
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          order_index?: number
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          order_index?: number
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          avatar: string
+          created_at: string
+          id: string
+          is_active: boolean
+          location: string
+          name: string
+          order_index: number
+          project: string
+          rating: number
+          review: string
+          updated_at: string
+        }
+        Insert: {
+          avatar: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location: string
+          name: string
+          order_index?: number
+          project: string
+          rating: number
+          review: string
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location?: string
+          name?: string
+          order_index?: number
+          project?: string
+          rating?: number
+          review?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery: {
         Row: {
           created_at: string

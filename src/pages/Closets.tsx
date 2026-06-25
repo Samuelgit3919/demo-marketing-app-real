@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
 import { useServicePageProjects } from "@/hooks/useServicePageProjects";
+import closetImage from "@/assets/images/closet_service.jpg";
 
 const steps = [
   "Measure your closet with our 3-Step Space Planner",
@@ -25,11 +26,9 @@ const features = [
   "Fully assembled cabinet supply",
 ];
 
-const HERO_FALLBACK = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=900&fit=crop";
-
 export default function Closets() {
   const { projects, loading, firstProject } = useServicePageProjects("closet");
-  const heroSrc = firstProject?.thumbnail || HERO_FALLBACK;
+  const heroSrc = firstProject?.thumbnail || closetImage;
 
   return (
     <div className="min-h-screen bg-brand-cream">

@@ -7,6 +7,7 @@ import HomeGallery from "@/components/sections/HomeGallery";
 import SpacePlannerPreview from "@/components/sections/SpacePlannerPreview";
 import CTABanner from "@/components/sections/CTABanner";
 import FAQSection from "@/components/sections/FAQSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import Footer from "@/components/layout/Footer";
 
 const Index = () => {
@@ -21,6 +22,7 @@ const Index = () => {
         <HomeGallery />
         <SpacePlannerPreview />
         <FAQSection limit={5} showViewAllButton />
+        <TestimonialsSection />
         <CTABanner />
         <Footer />
       </div>

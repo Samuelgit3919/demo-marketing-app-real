@@ -6,6 +6,32 @@ export interface Testimonial {
   rating: number;
   review: string;
   project: string;
+  order_index: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TestimonialInsert {
+  name: string;
+  location: string;
+  avatar: string;
+  rating: number;
+  review: string;
+  project: string;
+  order_index?: number;
+  is_active?: boolean;
+}
+
+export interface TestimonialUpdate {
+  name?: string;
+  location?: string;
+  avatar?: string;
+  rating?: number;
+  review?: string;
+  project?: string;
+  order_index?: number;
+  is_active?: boolean;
 }
 
 export interface GalleryImage {
@@ -46,6 +72,26 @@ export interface FAQ {
   question: string;
   answer: string;
   category: string;
+  order_index: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FAQInsert {
+  question: string;
+  answer: string;
+  category: string;
+  order_index?: number;
+  is_active?: boolean;
+}
+
+export interface FAQUpdate {
+  question?: string;
+  answer?: string;
+  category?: string;
+  order_index?: number;
+  is_active?: boolean;
 }
 
 export interface TeamMember {

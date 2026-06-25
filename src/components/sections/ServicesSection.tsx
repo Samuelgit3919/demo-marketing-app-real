@@ -4,24 +4,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import SectionWrapper from "@/components/ui/SectionWrapper";
+import closetImage from "@/assets/images/closet_service.jpg";
+import kitchenImage from "@/assets/images/kitchen_service.jpg";
+import garageImage from "@/assets/images/garage_service.jpg";
 
 const serviceCards = [
   {
     title: "Closets",
     href: "/closets",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+    image: closetImage,
     description: "Walk-ins, reach-ins, wardrobes, pantries, laundry rooms, and storage walls.",
   },
   {
     title: "Kitchens",
     href: "/kitchens",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop",
+    image: kitchenImage,
     description: "Custom kitchen cabinets designed live in CAD and supplied fully assembled.",
   },
   {
     title: "Garages",
     href: "/garages",
-    image: "https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=800&h=600&fit=crop",
+    image: garageImage,
     description: "Garage cabinets, workbenches, tall storage, and organized storage systems.",
   },
 ];

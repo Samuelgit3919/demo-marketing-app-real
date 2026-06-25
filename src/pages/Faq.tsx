@@ -1,12 +1,15 @@
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import FAQSection from "@/components/sections/FAQSection";
 import CTABanner from "@/components/sections/CTABanner";
 import Footer from "@/components/layout/Footer";
-import { faqs } from "@/data/faq";
-
-const categories = Array.from(new Set(faqs.map((faq) => faq.category)));
+import { useFAQs } from "@/hooks/useFAQs";
 
 const Faq = () => {
+  const { faqs, isLoading } = useFAQs();
+  const categories = Array.from(new Set(faqs.map((faq) => faq.category)));
+
   return (
     <div className="min-h-screen bg-brand-cream">
       <Navigation />
@@ -19,15 +22,16 @@ const Faq = () => {
           Clear answers about the online process, measurements, live CAD sessions, quote timing, and cabinet supply.
         </p>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
-          {categories.map((category) => (
-            <span key={category} className="px-3 py-1.5 rounded-full bg-brand-sand border border-brand-border text-brand-muted text-xs tracking-[0.08em] uppercase">
-              {category}
-            </span>
-          ))}
-        </div>
+        {!isLoading && (
+          <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
+            {categories.map((category) => (
+              <span key={category} className="px-3 py-1.5 rounded-full bg-brand-sand border border-brand-border text-brand-muted text-xs tracking-[0.08em] uppercase">
+                {category}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-
 
       <FAQSection />
       <CTABanner />

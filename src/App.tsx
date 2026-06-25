@@ -22,6 +22,8 @@ import Closets from "./pages/Closets";
 import Kitchens from "./pages/Kitchens";
 import Garages from "./pages/Garages";
 import Contact from "./pages/Contact";
+import AdminFaqs from "./pages/admin/Faqs";
+import AdminTestimonials from "./pages/admin/Testimonials";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +56,12 @@ const App = () => (
           </ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute>
             <Admin />
+          </ProtectedRoute>} />
+          <Route path="/admin/faqs" element={<ProtectedRoute>
+            <AdminFaqs />
+          </ProtectedRoute>} />
+          <Route path="/admin/testimonials" element={<ProtectedRoute>
+            <AdminTestimonials />
           </ProtectedRoute>} />
 
           <Route path="/how-it-works" element={<HowItWorks />} />
