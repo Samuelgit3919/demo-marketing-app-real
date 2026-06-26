@@ -21,9 +21,81 @@ export const StepTwo = ({ spaces, setSpaces, files, setFiles, additionalNotes, s
   const [activeSpaceId, setActiveSpaceId] = useState<string | null>(spaces.length > 0 ? spaces[0].id : null);
   const [unit, setUnit] = useState<"cm" | "in">("in");
 
-  const handleDrawingComplete = useCallback((spaceId: string, dataUrl: string, wallMeasurements: { label: string; length: string }[]) => {
-    setSpaces(prev => prev.map(s => s.id === spaceId ? { ...s, drawingData: dataUrl, wallMeasurements } : s));
+  const handleDrawingComplete = useCallback((
+    spaceId: string,
+    dataUrl: string,
+    wallMeasurements: { label: string; length: string }[],
+    totalPerimeter: number,
+    totalArea: number,
+  ) => {
+    setSpaces(prev => prev.map(s =>
+      s.id === spaceId
+        ? { ...s, drawingData: dataUrl, wallMeasurements, totalPerimeter, totalArea }
+        : s
+    ));
   }, [setSpaces]);
+
+  const isFormValid = () => {
+    if (spaces.length === 0) return false;
+    if (files.some(f => f.uploadStatus === "uploading")) return false;
+
+    for (const space of spaces) {
+      if (!space.name || space.name.trim() === "") return false;
+
+      const ceilingHeight = parseFloat(space.ceilingHeight);
+      if (!ceilingHeight || ceilingHeight <= 0) return false;
+
+      if (space.wallMeasurements && space.wallMeasurements.length > 0) {
+        for (const wall of space.wallMeasurements) {
+          if (!wall.length || wall.length.trim() === "") return false;
+          const length = parseFloat(wall.length);
+          if (isNaN(length) || length <= 0) return false;
+        }
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (spaces.length === 0) {
+      toast.error("Please add at least one space");
+      return;
+    }
+    if (files.some(f => f.uploadStatus === "uploading")) {
+      toast.error("Please wait for files to finish uploading");
+      return;
+    }
+    for (const space of spaces) {
+      if (!space.name || space.name.trim() === "") {
+        toast.error("Please enter a name for all spaces");
+        return;
+      }
+      const ceilingHeight = parseFloat(space.ceilingHeight);
+      if (!ceilingHeight || ceilingHeight <= 0) {
+        toast.error("Please enter a valid ceiling height for all spaces");
+        return;
+      }
+      if (!space.wallMeasurements || space.wallMeasurements.length === 0) {
+        toast.error("Please draw walls or add a shape template for each space");
+        return;
+      }
+      for (const wall of space.wallMeasurements) {
+        if (!wall.length || wall.length.trim() === "") {
+          toast.error("Please fill in all wall measurements");
+          return;
+        }
+        const length = parseFloat(wall.length);
+        if (isNaN(length) || length <= 0) {
+          toast.error("All wall measurements must be valid positive numbers");
+          return;
+        }
+      }
+    }
+    onNext();
+  };
 
   const uploadFileToSupabase = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
@@ -120,7 +192,9 @@ export const StepTwo = ({ spaces, setSpaces, files, setFiles, additionalNotes, s
           <DrawingCanvas 
             spaceId={space.id} 
             unit={unit} 
-            onDrawingComplete={(dataUrl, wallMeasurements) => handleDrawingComplete(space.id, dataUrl, wallMeasurements)} 
+            onDrawingComplete={(dataUrl, wallMeasurements, totalPerimeter, totalArea) =>
+              handleDrawingComplete(space.id, dataUrl, wallMeasurements, totalPerimeter, totalArea)
+            } 
           />
         </div>
       ))}
@@ -167,7 +241,17 @@ export const StepTwo = ({ spaces, setSpaces, files, setFiles, additionalNotes, s
       {/* Navigation */}
       <div className="flex justify-between pt-6">
         <button onClick={onBack} className="text-sm font-medium text-brand-muted hover:text-brand-espresso transition-colors">Back</button>
-        <button onClick={onNext} className="group inline-flex items-center justify-center gap-3 bg-brand-copper text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 rounded-full hover:bg-brand-copper-dark transition-all duration-300 shadow-lg">Review & Book</button>
+        <button
+          onClick={handleNext}
+          disabled={!isFormValid()}
+          className={`inline-flex items-center justify-center gap-3 text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 rounded-full transition-all duration-300 shadow-lg ${
+            isFormValid()
+              ? "bg-brand-copper text-white hover:bg-brand-copper-dark"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Review & Book
+        </button>
       </div>
     </div>
   );

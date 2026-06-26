@@ -13,15 +13,11 @@ export const PromoPopup = () => {
     const [claimed, setClaimed] = useState(false);
 
     useEffect(() => {
-        // Check if user has already seen or claimed the promo
-        const hasSeen = localStorage.getItem("promo_seen");
         const hasClaimed = localStorage.getItem("promo_claimed");
 
-        // Show popup after 3 seconds if not seen/claimed
-        if (!hasSeen && !hasClaimed) {
+        if (!hasClaimed) {
             const timer = setTimeout(() => {
                 setOpen(true);
-                localStorage.setItem("promo_seen", "true");
             }, 3000);
             return () => clearTimeout(timer);
         }
@@ -96,13 +92,6 @@ export const PromoPopup = () => {
 
                     {/* Content Side */}
                     <div className="relative p-6 sm:p-10 flex flex-col justify-center bg-white dark:bg-zinc-900">
-                        <button
-                            onClick={() => setOpen(false)}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors opacity-70 hover:opacity-100"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-
                         <div className="space-y-6 text-center md:text-left">
                             <div className="space-y-2">
                                 <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold tracking-wide uppercase">

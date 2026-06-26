@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import Wizard from "./pages/Wizard";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -48,7 +49,7 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/space-planner" element={<Wizard />} />
+          <Route path="/space-planner" element={<LanguageProvider><Wizard /></LanguageProvider>} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/file-manager" element={<ProtectedRoute>
