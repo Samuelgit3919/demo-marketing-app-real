@@ -2,9 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, CheckCircle, CalendarCheck, Ruler, Palette, Hammer } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import CTABanner from "@/components/sections/CTABanner";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
+import { supabase } from "@/integrations/supabase/client";
 import step1Image from "@/assets/images/step1.jpg";
 import step2Image from "@/assets/images/step2.jpg";
 import step3Image from "@/assets/images/step3.jpg";
@@ -126,6 +128,23 @@ function TimelineStep({ step, index }: { step: typeof steps[number]; index: numb
 }
 
 export default function HowItWorks() {
+  const [pricingTiers, setPricingTiers] = useState<Array<{ price: string; label: string }>>([
+    ["$2,500+", "Sliding Wardrobes"],
+    ["$4,500+", "Walk-in Closets"],
+    ["$8,000+", "Dressing Rooms"],
+    ["Custom", "Luxury Suites"],
+  ].map(([price, label]) => ({ price, label })));
+
+  useEffect(() => {
+    supabase
+      .from("pricing_tiers")
+      .select("price, label")
+      .eq("is_active", true)
+      .order("order_index")
+      .then(({ data }) => {
+        if (data && data.length > 0) setPricingTiers(data);
+      });
+  }, []);
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <Navigation />
@@ -191,10 +210,10 @@ export default function HowItWorks() {
                   Every project includes a fully itemized quote before any commitment. Our pricing is transparent, comprehensive, and guaranteed. What we quote is what you pay.
                 </p>
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                  {[["$2,500+", "Sliding Wardrobes"], ["$4,500+", "Walk-in Closets"], ["$8,000+", "Dressing Rooms"], ["Custom", "Luxury Suites"]].map(([price, label]) => (
-                    <div key={label} className="bg-white p-5 border-l-2 border-[#C9A96E]">
-                      <span className="text-[#1A1A18] text-2xl font-light block" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{price}</span>
-                      <span className="text-[#6B6B65] text-xs tracking-wider">{label}</span>
+                  {pricingTiers.map((tier) => (
+                    <div key={tier.label} className="bg-white p-5 border-l-2 border-[#C9A96E]">
+                      <span className="text-[#1A1A18] text-2xl font-light block" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{tier.price}</span>
+                      <span className="text-[#6B6B65] text-xs tracking-wider">{tier.label}</span>
                     </div>
                   ))}
                 </div>

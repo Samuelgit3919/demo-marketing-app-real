@@ -156,26 +156,24 @@ export const BeforeAfter = () => {
   return (
     <section
       ref={elementRef as React.RefObject<HTMLElement>}
-      className={`py-32 bg-gradient-subtle relative overflow-hidden transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      className={`py-32 bg-brand-cream relative overflow-hidden transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}
     >
       {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-copper/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-espresso/5 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className={`text-center mb-20 transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}>
-          <div className="inline-block mb-4 px-4 py-1.5 bg-accent/10 text-accent rounded-full text-sm font-semibold tracking-wide">
-            TRANSFORMATIONS
-          </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Closet <span className="text-accent relative inline-block">
-              Transformations
-              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-accent rounded-full" />
-            </span>
+
+          <div className="text-center mb-16">
+          <span className="text-brand-copper text-xs tracking-[0.3em] uppercase block mb-4">TRANSFORMATIONS</span>
+          <h2
+            className="text-brand-espresso font-light leading-tight"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(2rem, 4vw, 3.2rem)" }}
+          >
+            Closet Transformations
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-brand-muted max-w-2xl mx-auto leading-relaxed">
             Experience the dramatic difference our expert design brings to every project
           </p>
         </div>
@@ -183,9 +181,9 @@ export const BeforeAfter = () => {
         {/* Preview Panel */}
         <div className={`mb-16 flex justify-center items-center transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-          <div className="w-full max-w-5xl rounded-2xl overflow-hidden bg-card shadow-elegant border border-border/50 p-2 transition-all duration-500 hover:shadow-2xl hover:scale-[1.01]">
+          <div className="w-full max-w-5xl rounded-2xl overflow-hidden bg-white border border-brand-border shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] p-2 transition-all duration-500">
             <div
-              className="relative rounded-2xl overflow-hidden aspect-video cursor-ew-resize select-none group focus:outline-none focus:ring-4 focus:ring-accent/50"
+              className="relative rounded-2xl overflow-hidden aspect-video cursor-ew-resize select-none group focus:outline-none focus:ring-4 focus:ring-brand-copper/50"
               tabIndex={0}
               onMouseDown={() => setIsDragging(true)}
               onMouseUp={() => setIsDragging(false)}
@@ -203,8 +201,8 @@ export const BeforeAfter = () => {
             >
               {/* Loading State */}
               {(!imagesLoaded.before || !imagesLoaded.after) && (
-                <div className="absolute inset-0 bg-muted flex items-center justify-center z-10">
-                  <Loader2 className="w-12 h-12 text-accent animate-spin" />
+                <div className="absolute inset-0 bg-brand-sand-light flex items-center justify-center z-10">
+                  <Loader2 className="w-12 h-12 text-brand-copper animate-spin" />
                 </div>
               )}
 
@@ -243,24 +241,24 @@ export const BeforeAfter = () => {
                   transition: isDragging ? 'none' : 'left 0.1s ease-out'
                 }}
               >
-                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-white to-white/90 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] flex items-center justify-center border-4 border-accent/30 transition-all duration-300 ${isDragging ? 'scale-110' : 'group-hover:scale-110'}`}>
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-white to-white/90 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] flex items-center justify-center border-4 border-brand-copper/30 transition-all duration-300 ${isDragging ? 'scale-110' : ''}`}>
                   <div className="flex gap-1.5">
-                    <ChevronLeft className="w-4 h-4 text-foreground/60" strokeWidth={3} />
-                    <ChevronRight className="w-4 h-4 text-foreground/60" strokeWidth={3} />
+                    <ChevronLeft className="w-4 h-4 text-brand-espresso/60" strokeWidth={3} />
+                    <ChevronRight className="w-4 h-4 text-brand-espresso/60" strokeWidth={3} />
                   </div>
                 </div>
               </div>
 
               {/* Labels */}
-              <div className="absolute top-6 left-6 bg-gradient-to-br from-foreground/90 to-foreground/80 backdrop-blur-md text-background px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-elegant z-10 transition-all duration-300 hover:scale-105">
+              <div className="absolute top-6 left-6 bg-brand-espresso/80 text-white px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] z-10">
                 Before
               </div>
-              <div className="absolute top-6 right-6 bg-gradient-to-br from-accent via-accent to-accent/90 backdrop-blur-md text-white px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-elegant z-10 transition-all duration-300 hover:scale-105">
+              <div className="absolute top-6 right-6 bg-brand-copper text-white px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] z-10">
                 After
               </div>
 
               {/* Instruction hint */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-foreground/70 backdrop-blur-md text-white px-6 py-2.5 rounded-full text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-brand-espresso/70 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg">
                 ← Drag or use arrow keys to compare →
               </div>
             </div>
@@ -276,23 +274,23 @@ export const BeforeAfter = () => {
           <button
             onClick={scrollPrev}
             disabled={!canScrollPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 bg-gradient-to-br from-white via-white to-white/95 backdrop-blur-md rounded-full shadow-elegant flex items-center justify-center transition-all duration-300 hover:shadow-2xl hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none border-2 border-accent/20 group"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 bg-gradient-to-br from-white via-white to-white/95 backdrop-blur-md rounded-full shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] flex items-center justify-center transition-all duration-300 active:scale-95 disabled:opacity-0 disabled:pointer-events-none border-2 border-brand-copper/20"
             aria-label="Previous projects"
           >
-            <ChevronLeft className="w-7 h-7 text-foreground transition-transform duration-300 group-hover:-translate-x-0.5" strokeWidth={2.5} />
+            <ChevronLeft className="w-7 h-7 text-brand-espresso" strokeWidth={2.5} />
           </button>
 
           <button
             onClick={scrollNext}
             disabled={!canScrollNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 bg-gradient-to-br from-white via-white to-white/95 backdrop-blur-md rounded-full shadow-elegant flex items-center justify-center transition-all duration-300 hover:shadow-2xl hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none border-2 border-accent/20 group"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-14 h-14 bg-gradient-to-br from-white via-white to-white/95 backdrop-blur-md rounded-full shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] flex items-center justify-center transition-all duration-300 active:scale-95 disabled:opacity-0 disabled:pointer-events-none border-2 border-brand-copper/20"
             aria-label="Next projects"
           >
-            <ChevronRight className="w-7 h-7 text-foreground transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.5} />
+            <ChevronRight className="w-7 h-7 text-brand-espresso" strokeWidth={2.5} />
           </button>
 
           <div className="overflow-hidden mx-4" ref={emblaRef}>
-            <div className="flex gap-6 py-6 cursor-grab active:cursor-grabbing touch-pan-x">
+            <div className="flex gap-6 py-6 px-3 cursor-grab active:cursor-grabbing touch-pan-x">
               {projects.map((project, index) => (
                 <div
                   key={project.id}
@@ -301,31 +299,25 @@ export const BeforeAfter = () => {
                     emblaApi?.scrollTo(index);
                   }}
                   className={`
-                    min-w-[260px] cursor-pointer rounded-2xl overflow-hidden 
+                    min-w-[200px] cursor-pointer rounded-2xl overflow-hidden 
                     transition-all duration-500 ease-smooth
                     ${activeProject?.id === project.id
-                      ? "ring-4 ring-accent shadow-elegant scale-105"
-                      : "shadow-medium hover:shadow-elegant hover:scale-[1.02] opacity-75 hover:opacity-100"
+                      ? "ring-2 ring-brand-copper shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)]"
+                      : "shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] opacity-100"
                     }
                   `}
                 >
                   <div className="relative group/card">
-                    <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <div className="aspect-[4/3] overflow-hidden bg-brand-sand-light">
                       <img
                         src={project.thumbnail}
-                        className="w-full h-full object-cover transition-all duration-700 ease-smooth group-hover/card:scale-110 group-hover/card:brightness-110"
+                        className="w-full h-full object-cover transition-all duration-700 ease-smooth"
                         alt={`Project ${project.id} thumbnail`}
                         loading="lazy"
                       />
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-all duration-500"></div>
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-500">
-                      <div className="bg-gradient-to-r from-white via-white to-white/95 backdrop-blur-md text-foreground px-7 py-3.5 font-bold text-sm shadow-elegant transform translate-y-4 group-hover/card:translate-y-0 transition-all duration-500 border border-accent/20">
-                        View Project →
-                      </div>
-                    </div>
                     {activeProject?.id === project.id && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-br from-accent to-accent/90 text-white px-4 py-2 text-xs font-bold shadow-elegant animate-fade-in border border-white/20">
+                      <div className="absolute top-4 right-4 bg-brand-copper text-white px-4 py-2 text-xs font-bold shadow-[0_8px_30px_-12px_rgba(45,36,30,0.12)] animate-fade-in border border-white/20">
                         ACTIVE
                       </div>
                     )}

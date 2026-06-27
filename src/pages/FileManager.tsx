@@ -439,6 +439,9 @@ const FileManager = () => {
   const handleDelete = async (file: FileManagerFile) => {
     try {
       let table: string = file.folder || "gallery";
+      if (file.folder === "service") {
+        table = "services";
+      }
       let publicIds = [file.public_id];
       let idToDelete = file.id;
       if (file.folder === "before-after") {

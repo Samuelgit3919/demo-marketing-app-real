@@ -4,6 +4,7 @@ import ProcessSteps from "@/components/sections/ProcessSteps";
 import ServicesSection from "@/components/sections/ServicesSection";
 import WhyDifferent from "@/components/sections/WhyDifferent";
 import HomeGallery from "@/components/sections/HomeGallery";
+import { BeforeAfter } from "@/components/BeforeAfter";
 import SpacePlannerPreview from "@/components/sections/SpacePlannerPreview";
 import CTABanner from "@/components/sections/CTABanner";
 import FAQSection from "@/components/sections/FAQSection";
@@ -20,6 +21,7 @@ const Index = () => {
         <ServicesSection />
         <WhyDifferent />
         <HomeGallery />
+        <BeforeAfter />
         <SpacePlannerPreview />
         <FAQSection limit={5} showViewAllButton />
         <TestimonialsSection />

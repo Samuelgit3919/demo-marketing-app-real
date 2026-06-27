@@ -110,3 +110,20 @@ export interface ProcessStep {
   icon: string;
   duration?: string;
 }
+
+export interface PricingTier {
+  id: string;
+  price: string;
+  label: string;
+  order_index: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PricingTierInsert {
+  price: string;
+  label: string;
+  order_index?: number;
+  is_active?: boolean;
+}

@@ -13,7 +13,7 @@ const features = [
 
 export default function SpacePlannerPreview() {
   return (
-    <SectionWrapper className="bg-brand-cream py-24 lg:py-32">
+    <SectionWrapper className="bg-brand-sand py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Text */}
