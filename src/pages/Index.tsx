@@ -21,7 +21,7 @@ const Index = () => {
         <ServicesSection />
         <WhyDifferent />
         <HomeGallery />
-        <BeforeAfter />
+        {/* <BeforeAfter /> */}
         <SpacePlannerPreview />
         <FAQSection limit={5} showViewAllButton />
         <TestimonialsSection />
