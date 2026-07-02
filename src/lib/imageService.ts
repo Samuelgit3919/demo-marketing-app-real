@@ -344,7 +344,7 @@ export const imageService = {
           .select("*")
           .order("created_at", { ascending: false });
         if (error) throw error;
-        return data || [];
+        return (data || []) as unknown as BeforeAfterItem[];
       } catch (error) {
         console.error(`Fetch before_after attempt ${attempt} failed:`, error);
         if (attempt === retries) throw error;
@@ -357,7 +357,18 @@ export const imageService = {
   async uploadBeforeAfter(
     beforeFile: File,
     afterFile: File,
-    data: { title: string; description?: string; type: string },
+    data: {
+      title: string;
+      description?: string;
+      type: string;
+      location?: string;
+      project_date?: string;
+      before_label?: string;
+      after_label?: string;
+      tagline?: string;
+      stat_value?: string;
+      stat_label?: string;
+    },
     retries = 3,
   ): Promise<void> {
     const timestamp = Date.now();
@@ -399,7 +410,14 @@ export const imageService = {
             after_image_url: aUrl,
             after_public_id: aPath,
             is_active: true,
-          });
+            location: data.location || null,
+            project_date: data.project_date || null,
+            before_label: data.before_label || null,
+            after_label: data.after_label || null,
+            tagline: data.tagline || null,
+            stat_value: data.stat_value || null,
+            stat_label: data.stat_label || null,
+          } as any);
         if (error) {
           await cleanup([bPath, aPath]);
           throw error;

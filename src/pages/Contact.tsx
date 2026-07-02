@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
+import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { ArrowRight, Mail, Phone, Clock } from "lucide-react";
@@ -13,6 +14,11 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <Seo
+        title="Contact Us | Closet Design Wizard"
+        description="Get in touch with Closet Design Wizard for custom closet, kitchen, and garage design in Montreal. Call, email, or book a free online consultation."
+        path="/contact"
+      />
       <Navigation />
       <main className="pt-24 lg:pt-28 pb-20">
         <section className="px-6 lg:px-10 mb-12">

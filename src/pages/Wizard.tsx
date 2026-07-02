@@ -4,6 +4,8 @@ import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { StepOne } from "@/components/wizard/StepOne";
 import { StepTwo } from "@/components/wizard/StepTwo";
 import { StepThree } from "@/components/wizard/StepThree";
+import { Seo } from "@/components/Seo";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface UploadedFile {
   file: File;
@@ -23,6 +25,10 @@ export interface Space {
   unit?: "cm" | "in";
   totalPerimeter?: number;
   totalArea?: number;
+  /** Chosen predetermined layout template id (e.g. "k-galley", "c-double"). */
+  layout?: string;
+  /** Storage priorities in tap order: index 0 = 1st (green), 1 = 2nd (yellow), 2 = 3rd (red). */
+  storagePriorities?: string[];
 }
 
 const STORAGE_KEYS = {
@@ -40,6 +46,7 @@ const INITIAL_FORM = {
 };
 
 const Wizard = () => {
+  const { language, setLanguage, t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.step);
     return saved ? parseInt(saved) : 0;
@@ -89,12 +96,43 @@ const Wizard = () => {
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <Seo
+        title="Free 3-Step Space Planner | Closet Design Wizard"
+        description="Measure your closet, kitchen, or garage in three simple steps. Add your spaces, draw the walls, set storage priorities, and book a free design consultation."
+        path="/space-planner"
+      />
       <Navigation />
       <div className="pt-24 pb-8 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
+          {/* Language toggle */}
+          <div className="flex justify-end mb-4">
+            <div className="inline-flex items-center rounded-full border border-brand-border bg-white p-1 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setLanguage("en")}
+                aria-pressed={language === "en"}
+                className={`px-4 py-1.5 text-xs font-semibold tracking-wide rounded-full transition-colors ${
+                  language === "en" ? "bg-brand-copper text-white" : "text-brand-muted hover:text-brand-espresso"
+                }`}
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage("fr")}
+                aria-pressed={language === "fr"}
+                className={`px-4 py-1.5 text-xs font-semibold tracking-wide rounded-full transition-colors ${
+                  language === "fr" ? "bg-brand-copper text-white" : "text-brand-muted hover:text-brand-espresso"
+                }`}
+              >
+                FR
+              </button>
+            </div>
+          </div>
+
           <div className="text-center mb-8">
             <span className="text-brand-copper text-xs tracking-[0.3em] uppercase block mb-3">
-              Online Design Platform
+              {t("wz.eyebrow")}
             </span>
             <h1
               className="text-brand-espresso font-light leading-tight"
@@ -103,7 +141,7 @@ const Wizard = () => {
                 fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
               }}
             >
-              3-Step Space Planner
+              {t("wz.title")}
             </h1>
           </div>
 

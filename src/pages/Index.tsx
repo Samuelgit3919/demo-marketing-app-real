@@ -10,10 +10,16 @@ import CTABanner from "@/components/sections/CTABanner";
 import FAQSection from "@/components/sections/FAQSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import Footer from "@/components/layout/Footer";
+import { Seo } from "@/components/Seo";
 
 const Index = () => {
   return (
     <>
+      <Seo
+        title="Closet Design Wizard | Custom Closets, Kitchens & Garages in Montreal"
+        description="Design custom closets, kitchens, and garages online. Measure your space with our free 3-step planner, meet a designer live, and get a same-day quote."
+        path="/"
+      />
       <div className="min-h-screen">
         <Navigation />
         <HeroSection />
@@ -21,7 +27,7 @@ const Index = () => {
         <ServicesSection />
         <WhyDifferent />
         <HomeGallery />
-        {/* <BeforeAfter /> */}
+        <BeforeAfter />
         <SpacePlannerPreview />
         <FAQSection limit={5} showViewAllButton />
         <TestimonialsSection />

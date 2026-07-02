@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
+import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
@@ -32,6 +33,11 @@ export default function Garages() {
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <Seo
+        title="Custom Garage Storage & Cabinets | Closet Design Wizard"
+        description="Custom garage storage systems, cabinets, and shelving. Plan your garage online with our free 3-step space planner and get a same-day supply quote."
+        path="/garages"
+      />
       <Navigation />
       <main className="pt-24 lg:pt-28">
         <section className="px-6 lg:px-10 pb-16">

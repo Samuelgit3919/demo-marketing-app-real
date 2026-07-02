@@ -5,6 +5,7 @@ import { ArrowRight, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
 import { imageService, type GalleryViewItem } from "@/lib/imageService";
+import { ProjectVideos } from "@/components/sections/ProjectVideos";
 
 export default function Gallery() {
   const [items, setItems] = useState<GalleryViewItem[]>([]);
@@ -163,6 +164,8 @@ export default function Gallery() {
             )}
           </div>
         </div>
+
+        <ProjectVideos />
 
         {/* Album Lightbox */}
         {activeAlbum && (

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
+import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
@@ -31,6 +32,11 @@ export default function Kitchens() {
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <Seo
+        title="Custom Kitchen Cabinet Design | Closet Design Wizard"
+        description="Custom kitchen cabinetry designed online — single-wall, galley, L, U, G, and island layouts. Share your measurements and meet a designer live."
+        path="/kitchens"
+      />
       <Navigation />
       <main className="pt-24 lg:pt-28">
         <section className="px-6 lg:px-10 pb-16">

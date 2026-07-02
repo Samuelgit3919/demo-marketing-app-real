@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import {
   Canvas as FabricCanvas,
   Line,
-  Rect,
   PencilBrush,
   Text as FabricText,
   Shadow,
@@ -10,12 +9,25 @@ import {
   Group,
 } from "fabric";
 import { toast } from "sonner";
-import { Undo, Trash2 } from "lucide-react";
+import { Undo, Trash2, Pencil } from "lucide-react";
+import kSingleImg from "@/assets/layouts/kitchen-single.png";
+import kGalleyImg from "@/assets/layouts/kitchen-galley.png";
+import kLImg from "@/assets/layouts/kitchen-l.png";
+import kUImg from "@/assets/layouts/kitchen-u.png";
+import kGImg from "@/assets/layouts/kitchen-g.png";
+import kIslandImg from "@/assets/layouts/kitchen-island.png";
+import cDoubleImg from "@/assets/layouts/closet-double.png";
+import cUImg from "@/assets/layouts/closet-u.png";
+import cLImg from "@/assets/layouts/closet-l.png";
+import cReachImg from "@/assets/layouts/closet-reach.png";
+import cSingleImg from "@/assets/layouts/closet-single.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface DrawingCanvasProps {
   spaceId: string;
   unit: "cm" | "in";
+  /** Space type decides which predetermined layouts are offered. */
+  spaceType?: "Closet" | "Kitchen" | "Garage";
   onDrawingComplete: (
     dataUrl: string,
     wallMeasurements: WallMeasurement[],
@@ -31,7 +43,134 @@ interface WallMeasurement {
 
 const MAX_WALLS = 7;
 
-export const DrawingCanvas = ({ spaceId, unit, onDrawingComplete }: DrawingCanvasProps) => {
+/**
+ * Predetermined layout templates, traced as simple lines from the reference
+ * kitchen/closet layout diagrams. Each entry carries:
+ *  - `path`: the wall outline drawn on the Fabric canvas (one wall per segment)
+ *  - `labels`: one {char,x,y} per measurable wall, positioned near its midpoint
+ *  - `preview`: small line-art SVG path(s) shown on the toolbar button
+ *  - `name`: shown underneath each button
+ * Kitchen layouts are used for Kitchen spaces; the closet set is shared by
+ * Closet AND Garage spaces.
+ */
+interface LayoutTemplate {
+  id: string;
+  name: string;
+  path: string;
+  labels: Array<{ x: number; y: number }>;
+  img: string; // exact thumbnail cropped from the reference layout sheets
+}
+
+const KITCHEN_LAYOUTS: LayoutTemplate[] = [
+  {
+    id: "k-single",
+    name: "Single Wall",
+    path: "M 0,40 L 100,40",
+    labels: [{ x: 0, y: -22 }],
+    img: kSingleImg,
+  },
+  {
+    id: "k-galley",
+    name: "Galley",
+    path: "M 0,15 L 100,15 M 0,65 L 100,65",
+    labels: [{ x: 0, y: -42 }, { x: 0, y: 22 }],
+    img: kGalleyImg,
+  },
+  {
+    id: "k-l",
+    name: "L-Shaped",
+    path: "M 0,0 L 100,0 L 100,55 L 55,55 L 55,100 L 0,100 Z",
+    labels: [
+      { x: 0, y: -58 }, { x: 58, y: -22 }, { x: 28, y: 12 },
+      { x: 12, y: 28 }, { x: -22, y: 58 }, { x: -58, y: 0 },
+    ],
+    img: kLImg,
+  },
+  {
+    id: "k-u",
+    name: "U-Shaped",
+    path: "M 30,70 L 0,70 L 0,0 L 100,0 L 100,70 L 70,70",
+    labels: [
+      { x: -35, y: 28 }, { x: -58, y: -15 }, { x: 0, y: -58 },
+      { x: 58, y: -15 }, { x: 35, y: 28 },
+    ],
+    img: kUImg,
+  },
+  {
+    id: "k-g",
+    name: "G-Shaped",
+    path: "M 0,70 L 0,0 L 100,0 L 100,70 L 60,70 L 60,45 L 82,45",
+    labels: [
+      { x: -58, y: -15 }, { x: 0, y: -58 }, { x: 58, y: -15 },
+      { x: 30, y: 28 }, { x: 16, y: 8 }, { x: 21, y: -12 },
+    ],
+    img: kGImg,
+  },
+  {
+    id: "k-island",
+    name: "Island",
+    path: "M 0,0 L 100,0 L 100,75 L 0,75 Z M 35,30 L 65,30 L 65,48 L 35,48 Z",
+    labels: [
+      { x: 0, y: -56 }, { x: 58, y: -12 }, { x: 0, y: 32 }, { x: -58, y: -12 },
+    ],
+    img: kIslandImg,
+  },
+];
+
+const CLOSET_LAYOUTS: LayoutTemplate[] = [
+  {
+    id: "c-double",
+    name: "Double-Sided",
+    path: "M 0,0 L 100,0 L 100,80 L 0,80 Z",
+    labels: [
+      { x: 0, y: -56 }, { x: 58, y: -10 }, { x: 0, y: 36 }, { x: -58, y: -10 },
+    ],
+    img: cDoubleImg,
+  },
+  {
+    id: "c-u",
+    name: "U-Shaped",
+    path: "M 30,70 L 0,70 L 0,0 L 100,0 L 100,70 L 70,70",
+    labels: [
+      { x: -35, y: 28 }, { x: -58, y: -15 }, { x: 0, y: -58 },
+      { x: 58, y: -15 }, { x: 35, y: 28 },
+    ],
+    img: cUImg,
+  },
+  {
+    id: "c-l",
+    name: "L-Shaped",
+    path: "M 0,0 L 100,0 L 100,55 L 55,55 L 55,100 L 0,100 Z",
+    labels: [
+      { x: 0, y: -58 }, { x: 58, y: -22 }, { x: 28, y: 12 },
+      { x: 12, y: 28 }, { x: -22, y: 58 }, { x: -58, y: 0 },
+    ],
+    img: cLImg,
+  },
+  {
+    id: "c-reach",
+    name: "Reach-In",
+    path: "M 0,0 L 100,0 L 100,38 L 0,38 Z",
+    labels: [
+      { x: 0, y: -56 }, { x: 58, y: -31 }, { x: 0, y: -4 }, { x: -58, y: -31 },
+    ],
+    img: cReachImg,
+  },
+  {
+    id: "c-single",
+    name: "Single-Sided",
+    path: "M 100,0 L 0,0 L 0,80 L 100,80",
+    labels: [
+      { x: 0, y: -56 }, { x: -58, y: -10 }, { x: 0, y: 36 },
+    ],
+    img: cSingleImg,
+  },
+];
+
+const getLayouts = (spaceType?: "Closet" | "Kitchen" | "Garage"): LayoutTemplate[] =>
+  spaceType === "Kitchen" ? KITCHEN_LAYOUTS : CLOSET_LAYOUTS;
+
+export const DrawingCanvas = ({ spaceId, unit, spaceType, onDrawingComplete }: DrawingCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [wallMeasurements, setWallMeasurements] = useState<WallMeasurement[]>([]);
@@ -276,6 +415,24 @@ export const DrawingCanvas = ({ spaceId, unit, onDrawingComplete }: DrawingCanva
     isRestoringRef.current = false;
   }, [fabricCanvas]);
 
+  const prevUnitRef = useRef(unit);
+  const INCH_TO_CM = 2.54;
+  useEffect(() => {
+    const prevUnit = prevUnitRef.current;
+    if (prevUnit === unit) return;
+    setWallMeasurements((prev) => {
+      const next = prev.map((w) => {
+        const num = parseFloat(w.length);
+        if (isNaN(num)) return w;
+        const converted = prevUnit === "in" ? num * INCH_TO_CM : num / INCH_TO_CM;
+        return { ...w, length: (Math.round(converted * 100) / 100).toString() };
+      });
+      if (fabricCanvas) setTimeout(() => fireComplete(fabricCanvas, next), 0);
+      return next;
+    });
+    prevUnitRef.current = unit;
+  }, [unit, fabricCanvas, fireComplete]);
+
   const addShapeTemplate = (shapeType: string) => {
     const canvas = fabricCanvas;
     if (!canvas) return;
@@ -312,122 +469,19 @@ export const DrawingCanvas = ({ spaceId, unit, onDrawingComplete }: DrawingCanva
       y,
     });
 
-    switch (shapeType) {
-      case "u-shape":
-        shapeObj = new Path("M 30,60 L 0,60 L 0,0 L 100,0 L 100,60 L 70,60", {
-          left: -50,
-          top: -30,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -35, 45), mk(1, -70, 0), mk(2, 0, -50), mk(3, 70, 0), mk(4, 35, 45)];
-        break;
-      // case "rectangle":
-      //   shapeObj = new Rect({
-      //     left: -75,
-      //     top: -50,
-      //     width: 150,
-      //     height: 100,
-      //     stroke: "#2D241E",
-      //     strokeWidth: 3,
-      //     fill: "transparent",
-      //     shadow: wallShadow,
-      //   });
-      //   labelSpecs = [mk(0, 0, -58), mk(1, 83, 0), mk(2, 0, 68), mk(3, -93, 0)];
-      //   break;
-      case "lshape-1":
-        shapeObj = new Path("M 0,0 L 100,0 L 100,60 L 60,60 L 60,100 L 0,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, 0, -60), mk(1, 55, -20), mk(2, 35, 30), mk(3, 5, 55), mk(4, -25, 30), mk(5, -60, 0)];
-        break;
-      case "lshape-2":
-        shapeObj = new Path("M 0,60 L 40,60 L 40,0 L 100,0 L 100,100 L 0,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -30, 5), mk(1, -10, -20), mk(2, 20, -60), mk(3, 55, 0), mk(4, 0, 55), mk(5, -30, 30)];
-        break;
-      case "lshape-3":
-        shapeObj = new Path("M 0,0 L 60,0 L 60,40 L 100,40 L 100,100 L 0,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -20, -60), mk(1, 10, -30), mk(2, 35, -10), mk(3, 55, 20), mk(4, 0, 55), mk(5, -60, 0)];
-        break;
-      case "lshape-4":
-        shapeObj = new Path("M 0,40 L 40,40 L 40,0 L 100,0 L 100,100 L 0,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -30, -10), mk(1, -10, -30), mk(2, 20, -60), mk(3, 55, 0), mk(4, 0, 55), mk(5, -30, 20)];
-        break;
-      case "angle-1":
-        shapeObj = new Path("M 0,100 L 0,20 L 20,0 L 100,0 L 100,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -60, 5), mk(1, -30, -40), mk(2, 10, -60), mk(3, 55, 0), mk(4, 0, 55)];
-        break;
-      case "angle-2":
-        shapeObj = new Path("M 0,0 L 80,0 L 100,20 L 100,100 L 0,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -10, -60), mk(1, 30, -40), mk(2, 55, 5), mk(3, 0, 55), mk(4, -60, 0)];
-        break;
-      case "angle-3":
-        shapeObj = new Path("M 0,0 L 100,0 L 100,80 L 80,100 L 0,100 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, 0, -60), mk(1, 55, -5), mk(2, 30, 40), mk(3, -10, 55), mk(4, -60, 0)];
-        break;
-      case "angle-4":
-        shapeObj = new Path("M 0,0 L 0,80 L 20,100 L 100,100 L 100,0 Z", {
-          left: -50,
-          top: -50,
-          stroke: "#2D241E",
-          strokeWidth: 3,
-          fill: "transparent",
-          shadow: wallShadow,
-        });
-        labelSpecs = [mk(0, -60, -5), mk(1, -30, 40), mk(2, 10, 55), mk(3, 55, 0), mk(4, 0, -60)];
-        break;
-      default:
-        return;
-    }
+    // Look up the chosen predetermined layout (kitchen vs closet/garage set).
+    const template = getLayouts(spaceType).find((tpl) => tpl.id === shapeType);
+    if (!template) return;
+
+    shapeObj = new Path(template.path, {
+      left: -50,
+      top: -50,
+      stroke: "#2D241E",
+      strokeWidth: 3,
+      fill: "transparent",
+      shadow: wallShadow,
+    });
+    labelSpecs = template.labels.map((l, i) => mk(i, l.x, l.y));
 
     if (!shapeObj || labelSpecs.length === 0) return;
 
@@ -565,87 +619,61 @@ export const DrawingCanvas = ({ spaceId, unit, onDrawingComplete }: DrawingCanva
           <h3 className="text-lg font-semibold text-brand-espresso">{t("canvas.title")}</h3>
           <p className="text-sm text-brand-muted">{t("canvas.subtitle")}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleUndo}
-            className="p-2 rounded-md hover:bg-brand-sand transition-colors"
-            title={t("canvas.undo")}
-          >
-            <Undo size={18} />
-          </button>
-          <button
-            onClick={handleClear}
-            className="p-2 rounded-md hover:bg-brand-sand transition-colors"
-            title={t("canvas.clear")}
-          >
-            <Trash2 size={18} />
-          </button>
+      </div>
+
+      <div className="p-3 bg-brand-sand/30 border border-brand-border rounded-lg">
+        <p className="text-xs font-medium text-brand-muted mb-3">
+          {spaceType === "Kitchen" ? "Kitchen layouts" : "Closet & garage layouts"} — tap one to place it
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {getLayouts(spaceType).map((tpl) => (
+            <button
+              key={tpl.id}
+              onClick={() => addShapeTemplate(tpl.id)}
+              className="flex flex-col items-center gap-1.5 p-2.5 w-[104px] border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
+              title={tpl.name}
+            >
+              <img
+                src={tpl.img}
+                alt={tpl.name}
+                className="w-full h-[54px] object-contain"
+                loading="lazy"
+                draggable={false}
+              />
+              <span className="text-[11px] font-medium text-brand-muted text-center leading-tight uppercase tracking-wide">
+                {tpl.name}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 p-3 bg-brand-sand/30 border border-brand-border rounded-lg">
+      {/* How-to instruction, directly above the drawing area */}
+      <div className="flex items-start gap-2 rounded-lg border border-brand-copper/40 bg-brand-copper/10 px-4 py-3">
+        <Pencil className="w-4 h-4 mt-0.5 text-brand-copper flex-shrink-0" />
+        <p className="text-sm text-brand-espresso">
+          <span className="font-semibold">How to draw:</span> Click or tap, drag, and release to draw each wall.
+          Continue until your room shape is complete.
+        </p>
+      </div>
+
+      {/* Undo / Clear controls, sitting right on top of the drawing area */}
+      <div className="flex items-center justify-end gap-2">
         <button
-          onClick={() => addShapeTemplate("lshape-1")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="L-Shape 1"
+          type="button"
+          onClick={handleUndo}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-border bg-white text-sm font-medium text-brand-espresso hover:bg-brand-sand transition-colors"
+          title={t("canvas.undo")}
         >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 2,2 L 38,2 L 38,20 L 20,20 L 20,38 L 2,38 Z" />
-          </svg>
+          <Undo size={16} /> {t("canvas.undo")}
         </button>
         <button
-          onClick={() => addShapeTemplate("lshape-2")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="L-Shape 2"
+          type="button"
+          onClick={handleClear}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-red-300 bg-white text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+          title={t("canvas.clear")}
         >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 12,20 L 30,20 L 30,2 L 48,2 L 48,38 L 12,38 Z" />
-          </svg>
-        </button>
-        <button
-          onClick={() => addShapeTemplate("lshape-3")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="L-Shape 3"
-        >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 2,2 L 20,2 L 20,20 L 48,20 L 48,38 L 2,38 Z" />
-          </svg>
-        </button>
-        <button
-          onClick={() => addShapeTemplate("angle-1")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="Angle 1"
-        >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 6,34 L 6,14 L 14,6 L 44,6 L 44,34 Z" />
-          </svg>
-        </button>
-        <button
-          onClick={() => addShapeTemplate("angle-2")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="Angle 2"
-        >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 6,6 L 36,6 L 44,14 L 44,34 L 6,34 Z" />
-          </svg>
-        </button>
-        <button
-          onClick={() => addShapeTemplate("angle-3")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="Angle 3"
-        >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 6,6 L 44,6 L 44,26 L 36,34 L 6,34 Z" />
-          </svg>
-        </button>
-        <button
-          onClick={() => addShapeTemplate("angle-4")}
-          className="p-3 border-2 border-brand-border hover:border-brand-copper hover:bg-brand-copper/10 rounded-lg transition-all cursor-pointer"
-          title="Angle 4"
-        >
-          <svg width="50" height="40" viewBox="0 0 50 40" className="stroke-current stroke-2 fill-none">
-            <path d="M 6,6 L 6,26 L 14,34 L 44,34 L 44,6 Z" />
-          </svg>
+          <Trash2 size={16} /> {t("canvas.clear")}
         </button>
       </div>
 

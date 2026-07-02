@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Space, UploadedFile } from "@/pages/Wizard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle, Lock, ShieldCheck } from "lucide-react";
+import { WizardNav } from "@/components/wizard/WizardNav";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+const PAYMENT_URL = "https://mtl-closets.myhelcim.com/hosted/?token=9f9e5d22c6d13444ef33d9";
 
 interface StepThreeProps {
   formData: any;
@@ -13,10 +17,49 @@ interface StepThreeProps {
   onComplete: () => void;
 }
 
-export const StepThree = ({ formData, spaces, files, additionalNotes, onBack, onComplete }: StepThreeProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+declare global {
+  interface Window {
+    Calendly?: any;
+  }
+}
 
-  const handleSubmitAndBook = async () => {
+export const StepThree = ({ formData, spaces, files, additionalNotes, onBack, onComplete }: StepThreeProps) => {
+  const { t } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isScheduled, setIsScheduled] = useState(false);
+  const calendlyContainerRef = useRef<HTMLDivElement>(null);
+
+  const calendlyUrl = `https://calendly.com/designandsupply/30min?name=${encodeURIComponent(
+    formData.fullName
+  )}&email=${encodeURIComponent(formData.email)}&hide_event_type_details=1&hide_gdpr_banner=1`;
+
+  // Load the Calendly inline widget script once.
+  useEffect(() => {
+    const existingScript = document.getElementById("calendly-widget-script");
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = "calendly-widget-script";
+      script.src = "https://assets.calendly.com/assets/external/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  // Listen for the Calendly "event_scheduled" message so we know booking succeeded.
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.event && typeof e.data.event === "string" && e.data.event.indexOf("calendly") === 0) {
+        if (e.data.event === "calendly.event_scheduled") {
+          setIsScheduled(true);
+        }
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  const submitData = async () => {
     setIsSubmitting(true);
     try {
       const filePaths = files.filter(f => f.uploadStatus === 'success').map(f => f.filePath);
@@ -36,59 +79,81 @@ export const StepThree = ({ formData, spaces, files, additionalNotes, onBack, on
 
       // Invoke edge function to send emails
       await supabase.functions.invoke('send-submission-emails', {
-        body: { 
+        body: {
           clientEmail: formData.email,
           clientName: formData.fullName,
           submissionData: { ...formData, spaces, additionalNotes, filePaths }
         }
       });
 
-      toast.success("Your submission was received!");
-      
-      // Open Calendly in a new tab
-      const calendlyUrl = `https://calendly.com/designandsupply/30min?name=${encodeURIComponent(formData.fullName)}&email=${encodeURIComponent(formData.email)}`;
-      window.open(calendlyUrl, '_blank');
-
-      onComplete();
-
+      toast.success(t("s3.toastOk"));
+      setHasSubmitted(true);
     } catch (error: any) {
-      toast.error(error.message || "Failed to save submission.");
+      toast.error(error.message || t("s3.toastFail"));
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleFinish = () => {
+    submitData().then(() => {
+      onComplete();
+    });
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
         <h2 className="text-2xl font-semibold text-brand-espresso" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-          Step 3: Review & Book
+          {t("s3.title")}
         </h2>
-        <p className="text-brand-muted mt-1">Review your information, then book your live design call.</p>
+        <p className="text-brand-muted mt-1">{t("s3.subtitle")}</p>
       </div>
 
-      {/* Summary Section */}
+      {/* Calendly Scheduling (embedded, not an external link) */}
+      <div className="rounded-lg border border-brand-border overflow-hidden">
+        <div className="px-4 py-3 bg-brand-sand/50 border-b border-brand-border flex items-center justify-between">
+          <h3 className="font-semibold text-brand-espresso">{t("s3.schedule")}</h3>
+          {isScheduled && (
+            <span className="flex items-center gap-1.5 text-sm text-green-600 font-medium">
+              <CheckCircle size={16} /> {t("s3.scheduled")}
+            </span>
+          )}
+        </div>
+        <div
+          ref={calendlyContainerRef}
+          className="calendly-inline-widget"
+          data-url={calendlyUrl}
+          style={{ minWidth: "320px", height: "650px" }}
+        />
+      </div>
+
+      {/* Summary Section — placed below the Calendly scheduler */}
       <div className="space-y-6 rounded-lg border border-brand-border bg-brand-sand/30 p-6">
+        <h3 className="text-xl font-semibold text-brand-espresso" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+          {t("s3.summary")}
+        </h3>
+
         <div className="pb-4 border-b border-brand-border">
-          <h3 className="font-semibold text-brand-espresso">Contact Information</h3>
-          <p><strong>Name:</strong> {formData.fullName}</p>
-          <p><strong>Email:</strong> {formData.email}</p>
-          {formData.phone && <p><strong>Phone:</strong> {formData.phone}</p>}
-          <p><strong>Postal Code:</strong> {formData.postalCode}</p>
+          <h3 className="font-semibold text-brand-espresso">{t("s3.contact")}</h3>
+          <p><strong>{t("s3.name")}</strong> {formData.fullName}</p>
+          <p><strong>{t("s3.email")}</strong> {formData.email}</p>
+          {formData.phone && <p><strong>{t("s3.phone")}</strong> {formData.phone}</p>}
+          <p><strong>{t("s3.postal")}</strong> {formData.postalCode}</p>
         </div>
 
         <div className="pb-4 border-b border-brand-border">
-          <h3 className="font-semibold text-brand-espresso">Spaces</h3>
+          <h3 className="font-semibold text-brand-espresso">{t("s3.spaces")}</h3>
           {spaces.map(space => (
             <div key={space.id} className="mt-4 space-y-2">
               <p><strong>{space.name}</strong> ({space.type})</p>
-              <p>Ceiling: {space.ceilingHeight} {space.unit || 'in'}</p>
+              <p>{t("s3.ceiling")} {space.ceilingHeight} {space.unit || 'in'}</p>
               {space.drawingData && <img src={space.drawingData} alt={`Drawing for ${space.name}`} className="w-full h-auto max-h-48 object-contain rounded-md border border-brand-border mt-2"/>}
-              
+
               {/* Wall Measurements Table */}
               {space.wallMeasurements && space.wallMeasurements.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-sm font-medium text-brand-muted mb-1">Wall Measurements:</p>
+                  <p className="text-sm font-medium text-brand-muted mb-1">{t("s3.walls")}</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                     {space.wallMeasurements.map((wall) => (
                       <div key={wall.label} className="flex items-center gap-2 bg-white rounded-md border border-brand-border px-3 py-2">
@@ -99,35 +164,97 @@ export const StepThree = ({ formData, spaces, files, additionalNotes, onBack, on
                   </div>
                 </div>
               )}
+
+              {/* Totals */}
+              {(space.totalPerimeter || space.totalArea) ? (
+                <div className="mt-3 flex flex-wrap gap-x-8 gap-y-1 text-sm">
+                  <p>
+                    <strong>{t("s3.perimeter")}</strong>{" "}
+                    {(space.totalPerimeter ?? 0).toFixed(2)} {space.unit || 'in'}
+                  </p>
+                  <p>
+                    <strong>{t("s3.area")}</strong>{" "}
+                    {(space.totalArea ?? 0).toFixed(2)} {space.unit || 'in'}²
+                  </p>
+                </div>
+              ) : null}
+
+              {/* Storage Priorities */}
+              {space.storagePriorities && space.storagePriorities.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-sm font-medium text-brand-muted mb-1">{t("s3.storage")}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {["Hanging", "Drawers", "Shelves"].map((option) => {
+                      const rank = space.storagePriorities!.indexOf(option);
+                      const color = rank === 0 ? "bg-green-500" : rank === 1 ? "bg-yellow-500" : "bg-red-500";
+                      const label = rank === 0 ? "1st" : rank === 1 ? "2nd" : "—";
+                      return (
+                        <span key={option} className={`text-xs font-semibold text-white rounded-full px-3 py-1 ${color}`}>
+                          {label === "—" ? t("s2." + option.toLowerCase()) : `${label} · ${t("s2." + option.toLowerCase())}`}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
 
         {additionalNotes && (
           <div className="pb-4 border-b border-brand-border">
-            <h3 className="font-semibold text-brand-espresso">Additional Notes</h3>
+            <h3 className="font-semibold text-brand-espresso">{t("s3.notes")}</h3>
             <p>{additionalNotes}</p>
           </div>
         )}
 
         <div>
-          <h3 className="font-semibold text-brand-espresso">Uploaded Files</h3>
-          <p>{files.length} file(s)</p>
+          <h3 className="font-semibold text-brand-espresso">{t("s3.files")}</h3>
+          <p>{files.length} {t("s3.filesCount")}</p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex justify-between items-center pt-6">
-        <button onClick={onBack} disabled={isSubmitting} className="text-sm font-medium text-brand-muted hover:text-brand-espresso transition-colors">Back</button>
-        <button 
-          onClick={handleSubmitAndBook} 
-          disabled={isSubmitting}
-          className="group inline-flex items-center justify-center gap-3 bg-brand-copper text-white text-sm tracking-[0.2em] uppercase font-medium px-8 py-4 rounded-full hover:bg-brand-copper-dark transition-all duration-300 shadow-lg disabled:bg-brand-muted"
-        >
-          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit & Book Live Design Call'}
-          {!isSubmitting && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
-        </button>
+      {/* Secure Payment */}
+      <div className="rounded-lg border border-brand-border overflow-hidden">
+        <div className="px-4 py-3 bg-brand-sand/50 border-b border-brand-border flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-brand-copper" />
+          <h3 className="font-semibold text-brand-espresso">{t("s3.payTitle")}</h3>
+        </div>
+        <div className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-brand-espresso font-medium">{t("s3.payLead")}</p>
+            <p className="text-sm text-brand-muted mt-1">
+              {t("s3.payDesc")}
+            </p>
+          </div>
+          <a
+            href={PAYMENT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-brand-copper text-white text-sm tracking-[0.15em] uppercase font-medium px-6 py-3.5 rounded-full hover:bg-brand-copper-dark transition-all duration-300 shadow-lg whitespace-nowrap"
+          >
+            <Lock className="w-4 h-4" /> {t("s3.payNow")}
+          </a>
+        </div>
       </div>
+
+      {/* Navigation (floating) */}
+      <WizardNav
+        left={
+          <button onClick={onBack} disabled={isSubmitting} className="inline-flex items-center gap-1 px-2 sm:px-3 py-3 text-sm font-medium text-brand-muted hover:text-brand-espresso transition-colors disabled:opacity-50">{t("s3.back")}</button>
+        }
+        right={
+          <button
+            onClick={handleFinish}
+            disabled={isSubmitting || hasSubmitted}
+            className={`group inline-flex items-center justify-center gap-3 bg-brand-copper text-white text-[11px] sm:text-sm tracking-[0.1em] sm:tracking-[0.2em] uppercase font-medium px-4 sm:px-8 py-3 sm:py-4 rounded-full whitespace-nowrap hover:bg-brand-copper-dark transition-all duration-300 shadow-lg disabled:bg-brand-muted ${
+              isSubmitting || hasSubmitted ? "" : "animate-wizard-pulse"
+            }`}
+          >
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : hasSubmitted ? t("s3.submitted") : t("s3.submit")}
+          </button>
+        }
+      />
     </div>
   );
 };

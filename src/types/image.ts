@@ -90,4 +90,12 @@ export interface BeforeAfterItem {
     is_active: boolean;
     order_index: number;
     created_at: string;
+    // Editorial fields for the homepage transformations section (all optional)
+    location?: string | null;
+    project_date?: string | null;
+    before_label?: string | null;
+    after_label?: string | null;
+    tagline?: string | null;
+    stat_value?: string | null;
+    stat_label?: string | null;
 }

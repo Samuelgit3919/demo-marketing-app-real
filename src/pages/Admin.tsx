@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { Search, Download, Loader2, Upload, Trash2, Copy } from "lucide-react";
 import AdminTopBar from "@/components/layout/AdminTopBar";
+import { BeforeAfterManager } from "@/components/admin/BeforeAfterManager";
+import { VideoManager } from "@/components/admin/VideoManager";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +60,7 @@ const Admin = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [adminTab, setAdminTab] = useState<"submissions" | "beforeafter" | "videos">("submissions");
 
   const statusBadgeClasses: Record<string, string> = {
     pending: "bg-brand-sand text-brand-espresso border-brand-border hover:bg-brand-sand",
@@ -330,6 +333,29 @@ const Admin = () => {
             </div>
           </div>
 
+          {/* Section tabs */}
+          <div className="flex flex-wrap gap-1 border-b border-brand-border">
+            {([
+              ["submissions", "Submissions"],
+              ["beforeafter", "Before / After"],
+              ["videos", "Project Videos"],
+            ] as const).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setAdminTab(key)}
+                className={`px-4 py-2.5 text-sm font-medium transition-colors ${
+                  adminTab === key
+                    ? "border-b-2 border-brand-copper text-brand-copper"
+                    : "text-brand-muted hover:text-brand-espresso"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {adminTab === "submissions" && (
+          <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: "Total", value: statusCounts.total },
@@ -669,6 +695,11 @@ const Admin = () => {
             })
             )}
           </div>
+          </>
+          )}
+
+          {adminTab === "beforeafter" && <BeforeAfterManager />}
+          {adminTab === "videos" && <VideoManager />}
         </div>
       </div>
     </>
