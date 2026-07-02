@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { Globe, Share2, ExternalLink, Mail, Phone, MapPin } from "lucide-react";
+import { useContactInfo } from "@/hooks/useContactInfo";
 
 export default function Footer() {
+  const { contactInfo } = useContactInfo();
+
+  const email = contactInfo?.email || "hello@designandsupply.com";
+  const phone = contactInfo?.phone || "+1 (800) 555-0192";
+  const addressLine1 = contactInfo?.address_line1 || "1200 Design District Blvd";
+  const addressLine2 = contactInfo?.address_line2 || "Los Angeles, CA 90028";
+
   return (
     <footer className="bg-[#1A1A18] text-white/60">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-8">
@@ -96,15 +104,15 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex gap-3 items-start">
                 <Phone size={14} className="mt-0.5 text-[#C9A96E] flex-shrink-0" />
-                <span className="text-sm">+1 (800) 555-0192</span>
+                <span className="text-sm">{phone}</span>
               </li>
               <li className="flex gap-3 items-start">
                 <Mail size={14} className="mt-0.5 text-[#C9A96E] flex-shrink-0" />
-                <span className="text-sm">designwithsupply@gmail.com</span>
+                <span className="text-sm">{email}</span>
               </li>
               <li className="flex gap-3 items-start">
                 <MapPin size={14} className="mt-0.5 text-[#C9A96E] flex-shrink-0" />
-                <span className="text-sm">1200 Design District Blvd,<br />Los Angeles, CA 90028</span>
+                <span className="text-sm">{addressLine1 ? `${addressLine1},` : ""}<br />{addressLine2}</span>
               </li>
             </ul>
           </div>

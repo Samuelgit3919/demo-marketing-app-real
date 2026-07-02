@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { Navigation } from "@/components/Navigation";
-import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
@@ -31,12 +31,26 @@ export default function Closets() {
   const { projects, loading, firstProject } = useServicePageProjects("closet");
   const heroSrc = firstProject?.thumbnail || closetImage;
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Custom Closets Designed Online",
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Design & Supply",
+    },
+    description:
+      "Custom walk-in and reach-in closets designed live in CAD. Fully assembled cabinets and same-day quote.",
+    serviceType: "Custom Closet Design",
+    url: "https://designandsupply.ca/closets",
+  };
+
   return (
     <div className="min-h-screen bg-brand-cream">
-      <Seo
-        title="Custom Closet Design | Walk-in & Reach-in Closets | Closet Design Wizard"
-        description="Custom walk-in, reach-in, and wardrobe closets with soft-close drawers, adjustable shelves, and hanging rods. Measure online and get a same-day quote."
-        path="/closets"
+      <SeoHead
+        title="Custom Closets Designed Online | Design & Supply"
+        description="Custom walk-in and reach-in closets designed live in CAD. Fully assembled cabinets and same-day quote."
+        jsonLd={serviceSchema}
       />
       <Navigation />
       <main className="pt-24 lg:pt-28">

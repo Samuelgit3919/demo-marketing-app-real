@@ -5,6 +5,7 @@ import { team } from "@/data/team";
 import CTABanner from "@/components/sections/CTABanner";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
+import { SeoHead } from "@/components/seo/SeoHead";
 
 const values = [
   { icon: Award, title: "Uncompromising Quality", description: "Only premium materials pass our selection. Every component is sourced from the world's finest suppliers." },
@@ -16,6 +17,10 @@ const values = [
 export default function AboutUs() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
+      <SeoHead
+        title="About Design & Supply"
+        description="Learn about Design & Supply and our online design and supply model for custom storage projects."
+      />
       <Navigation />
       <div className="flex-grow">
         {/* Hero */}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { imageService, type GalleryViewItem } from "@/lib/imageService";
 import { ProjectVideos } from "@/components/sections/ProjectVideos";
 
@@ -41,6 +42,10 @@ export default function Gallery() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col justify-between">
+        <SeoHead
+          title="Project Gallery | Design & Supply"
+          description="Browse real Design & Supply project photos for closets, kitchens, and garages."
+        />
         <Navigation />
         <div className="flex-grow flex items-center justify-center bg-[#FAFAF7]">
           <Loader2 className="w-8 h-8 animate-spin text-[#C9A96E]" />
@@ -53,6 +58,10 @@ export default function Gallery() {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col justify-between">
+        <SeoHead
+          title="Project Gallery | Design & Supply"
+          description="Browse real Design & Supply project photos for closets, kitchens, and garages."
+        />
         <Navigation />
         <div className="flex-grow flex items-center justify-center bg-[#FAFAF7]">
           <p className="text-[#6B6B65]">{error}</p>
@@ -64,6 +73,10 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
+      <SeoHead
+        title="Project Gallery | Design & Supply"
+        description="Browse real Design & Supply project photos for closets, kitchens, and garages."
+      />
       <Navigation />
       <div className="flex-grow">
         {/* Hero */}

@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { Navigation } from "@/components/Navigation";
-import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
@@ -31,12 +31,26 @@ export default function Garages() {
   const { projects, loading, firstProject } = useServicePageProjects("garage");
   const heroSrc = firstProject?.thumbnail || garageImage;
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Custom Garage Storage Designed Online",
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Design & Supply",
+    },
+    description:
+      "Garage cabinets, slatwall, and workbench storage designed online with live CAD and same-day quote.",
+    serviceType: "Custom Garage Design",
+    url: "https://designandsupply.ca/garages",
+  };
+
   return (
     <div className="min-h-screen bg-brand-cream">
-      <Seo
-        title="Custom Garage Storage & Cabinets | Closet Design Wizard"
-        description="Custom garage storage systems, cabinets, and shelving. Plan your garage online with our free 3-step space planner and get a same-day supply quote."
-        path="/garages"
+      <SeoHead
+        title="Custom Garage Storage Designed Online | Design & Supply"
+        description="Garage cabinets, slatwall, and workbench storage designed online with live CAD and same-day quote."
+        jsonLd={serviceSchema}
       />
       <Navigation />
       <main className="pt-24 lg:pt-28">

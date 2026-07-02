@@ -29,6 +29,7 @@ export default function AdminTopBar({ onLogout }: AdminTopBarProps) {
         { to: "/admin/faqs", label: "FAQs" },
         { to: "/admin/testimonials", label: "Testimonials" },
         { to: "/admin/pricing", label: "Pricing" },
+        { to: "/admin/contact", label: "Contact Info" },
         { to: "/file-manager", label: "File Manager" },
     ];
 

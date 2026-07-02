@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_info: {
+        Row: {
+          address_line1: string
+          address_line2: string
+          business_hours: string
+          email: string
+          id: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string
+          address_line2?: string
+          business_hours?: string
+          email?: string
+          id?: string
+          phone?: string
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string
+          business_hours?: string
+          email?: string
+          id?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       before_after: {
         Row: {
           after_image_url: string

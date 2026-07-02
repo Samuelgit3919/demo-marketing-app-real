@@ -4,6 +4,7 @@ import { Navigation } from "@/components/Navigation";
 import FAQSection from "@/components/sections/FAQSection";
 import CTABanner from "@/components/sections/CTABanner";
 import Footer from "@/components/layout/Footer";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { useFAQs } from "@/hooks/useFAQs";
 
 const Faq = () => {
@@ -12,6 +13,10 @@ const Faq = () => {
 
   return (
     <div className="min-h-screen bg-brand-cream">
+      <SeoHead
+        title="FAQ | Design & Supply"
+        description="Answers about the online design process, measurements, CAD sessions, quotes, delivery, and installation."
+      />
       <Navigation />
       <div className="pt-32 lg:pt-40 pb-10 text-center px-6">
         <span className="text-brand-copper text-xs tracking-[0.3em] uppercase block mb-4">Questions & Answers</span>

@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { Navigation } from "@/components/Navigation";
-import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
 import CTABanner from "@/components/sections/CTABanner";
 import ServiceProjectGrid from "@/components/sections/ServiceProjectGrid";
@@ -30,12 +30,26 @@ const features = [
 export default function Kitchens() {
   const { projects, loading } = useServicePageProjects("kitchen");
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Custom Kitchen Cabinets Designed Online",
+    provider: {
+      "@type": "LocalBusiness",
+      name: "Design & Supply",
+    },
+    description:
+      "Custom kitchen cabinets and storage designed live online. See your CAD design and get a same-day quote.",
+    serviceType: "Custom Kitchen Design",
+    url: "https://designandsupply.ca/kitchens",
+  };
+
   return (
     <div className="min-h-screen bg-brand-cream">
-      <Seo
-        title="Custom Kitchen Cabinet Design | Closet Design Wizard"
-        description="Custom kitchen cabinetry designed online — single-wall, galley, L, U, G, and island layouts. Share your measurements and meet a designer live."
-        path="/kitchens"
+      <SeoHead
+        title="Custom Kitchen Cabinets Designed Online | Design & Supply"
+        description="Custom kitchen cabinets and storage designed live online. See your CAD design and get a same-day quote."
+        jsonLd={serviceSchema}
       />
       <Navigation />
       <main className="pt-24 lg:pt-28">

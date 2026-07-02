@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import CTABanner from "@/components/sections/CTABanner";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/layout/Footer";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { supabase } from "@/integrations/supabase/client";
 import step1Image from "@/assets/images/step1.jpg";
 import step2Image from "@/assets/images/step2.jpg";
@@ -147,6 +148,10 @@ export default function HowItWorks() {
   }, []);
   return (
     <div className="min-h-screen flex flex-col justify-between">
+      <SeoHead
+        title="How It Works | Design & Supply"
+        description="See how our online process works: measure your space, meet a designer live, and get a same-day quote for fully assembled cabinets."
+      />
       <Navigation />
       <div className="flex-grow">
         {/* Hero */}

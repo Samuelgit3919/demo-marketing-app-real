@@ -121,6 +121,16 @@ export interface PricingTier {
   updated_at: string;
 }
 
+export interface ContactInfo {
+  id: string;
+  email: string;
+  phone: string;
+  address_line1: string;
+  address_line2: string;
+  business_hours: string;
+  updated_at: string;
+}
+
 export interface PricingTierInsert {
   price: string;
   label: string;

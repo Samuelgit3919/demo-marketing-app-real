@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
-import { Seo } from "@/components/Seo";
 import Footer from "@/components/layout/Footer";
+import { SeoHead } from "@/components/seo/SeoHead";
 import Link from "next/link";
 import { ArrowRight, Mail, Phone, Clock } from "lucide-react";
+import { useContactInfo } from "@/hooks/useContactInfo";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const { contactInfo } = useContactInfo();
+
+  const email = contactInfo?.email || "hello@designandsupply.com";
+  const phone = contactInfo?.phone || "+1 (800) 555-0192";
+  const hours = contactInfo?.business_hours || "Mon–Fri: 9:00 AM to 6:00 PM";
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,10 +20,9 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-brand-cream">
-      <Seo
-        title="Contact Us | Closet Design Wizard"
-        description="Get in touch with Closet Design Wizard for custom closet, kitchen, and garage design in Montreal. Call, email, or book a free online consultation."
-        path="/contact"
+      <SeoHead
+        title="Contact Design & Supply"
+        description="Contact Design & Supply for custom closet, kitchen, and garage design help."
       />
       <Navigation />
       <main className="pt-24 lg:pt-28 pb-20">
@@ -38,9 +43,9 @@ export default function Contact() {
             <div className="bg-white border border-brand-border rounded-2xl p-8">
               <h2 className="text-brand-espresso text-3xl mb-6" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Contact info</h2>
               <div className="space-y-5 text-sm text-brand-muted">
-                <p className="flex items-start gap-3"><Mail size={16} className="text-brand-copper mt-0.5" />hello@designandsupply.com</p>
-                <p className="flex items-start gap-3"><Phone size={16} className="text-brand-copper mt-0.5" />+1 (800) 555-0192</p>
-                <p className="flex items-start gap-3"><Clock size={16} className="text-brand-copper mt-0.5" />Mon–Fri: 9:00 AM to 6:00 PM</p>
+                <p className="flex items-start gap-3"><Mail size={16} className="text-brand-copper mt-0.5" />{email}</p>
+                <p className="flex items-start gap-3"><Phone size={16} className="text-brand-copper mt-0.5" />{phone}</p>
+                <p className="flex items-start gap-3"><Clock size={16} className="text-brand-copper mt-0.5" />{hours}</p>
               </div>
 
               <div className="mt-8">

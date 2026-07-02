@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { ProgressBar } from "@/components/wizard/ProgressBar";
+import { SeoHead } from "@/components/seo/SeoHead";
 import { StepOne } from "@/components/wizard/StepOne";
 import { StepTwo } from "@/components/wizard/StepTwo";
 import { StepThree } from "@/components/wizard/StepThree";
-import { Seo } from "@/components/Seo";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface UploadedFile {
@@ -96,10 +96,9 @@ const Wizard = () => {
 
   return (
     <div className="min-h-screen bg-brand-cream">
-      <Seo
-        title="Free 3-Step Space Planner | Closet Design Wizard"
-        description="Measure your closet, kitchen, or garage in three simple steps. Add your spaces, draw the walls, set storage priorities, and book a free design consultation."
-        path="/space-planner"
+      <SeoHead
+        title="3-Step Space Planner | Design & Supply"
+        description="Enter your details, draw your space, upload photos, and submit for a live online CAD design call."
       />
       <Navigation />
       <div className="pt-24 pb-8 px-4 md:px-6">

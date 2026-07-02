@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Gift } from "lucide-react";
+import { Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -29,7 +29,6 @@ export const PromoPopup = () => {
 
         setLoading(true);
         try {
-            // Sign up/Login with OTP
             const { error } = await supabase.auth.signInWithOtp({
                 email,
                 options: {
@@ -52,18 +51,23 @@ export const PromoPopup = () => {
     if (claimed) {
         return (
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-md bg-gradient-to-br from-primary/10 to-background border-2 border-primary/20">
+                <DialogContent className="sm:max-w-md bg-white border border-brand-border">
                     <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                            <Gift className="w-8 h-8 text-green-600" />
+                        <div className="w-16 h-16 bg-brand-copper/10 rounded-full flex items-center justify-center">
+                            <Gift className="w-8 h-8 text-brand-copper" />
                         </div>
-                        <h2 className="text-2xl font-bold text-green-700">Code Sent!</h2>
-                        <p className="text-muted-foreground">
+                        <h2 className="text-2xl text-brand-espresso" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                            Code Sent!
+                        </h2>
+                        <p className="text-sm text-brand-muted">
                             We've sent a magic link and your promo code to <strong>{email}</strong>.
                             <br />
                             Please check your inbox to verify and claim your discount.
                         </p>
-                        <Button onClick={() => setOpen(false)} className="w-full">
+                        <Button
+                            onClick={() => setOpen(false)}
+                            className="bg-brand-copper text-white text-sm tracking-[0.2em] uppercase rounded-full hover:bg-brand-copper-dark transition-all duration-300 px-8"
+                        >
                             Got it, thanks!
                         </Button>
                     </div>
@@ -74,33 +78,41 @@ export const PromoPopup = () => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden gap-0 bg-background border-0 shadow-2xl">
+            <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden gap-0 bg-white border border-brand-border">
                 <div className="grid md:grid-cols-2">
                     {/* Image Side */}
                     <div className="relative hidden md:block h-full min-h-[400px]">
-                        <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
                         <img
-                            src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80"
-                            alt="Kitchen Design"
+                            src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&q=80"
+                            alt="Custom walk-in closet"
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center bg-black/30">
-                            <h3 className="text-3xl font-bold mb-2">Dream Kitchens</h3>
-                            <p className="text-lg opacity-90">Start your journey today</p>
+                        <div className="absolute inset-0 bg-brand-espresso/30" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
+                            <h3
+                                className="text-4xl font-light mb-2"
+                                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                            >
+                                Custom Storage
+                            </h3>
+                            <p className="text-sm tracking-wider text-white/80">Designed live from your home</p>
                         </div>
                     </div>
 
                     {/* Content Side */}
-                    <div className="relative p-6 sm:p-10 flex flex-col justify-center bg-white dark:bg-zinc-900">
+                    <div className="relative p-6 sm:p-10 flex flex-col justify-center bg-brand-cream">
                         <div className="space-y-6 text-center md:text-left">
                             <div className="space-y-2">
-                                <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold tracking-wide uppercase">
+                                <span className="text-brand-copper text-xs tracking-[0.3em] uppercase block">
                                     Limited Time Offer
                                 </span>
-                                <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground tracking-tight">
+                                <h2
+                                    className="text-brand-espresso font-light leading-tight"
+                                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
+                                >
                                     $150 OFF
                                 </h2>
-                                <p className="text-muted-foreground text-lg">
+                                <p className="text-brand-muted text-sm leading-relaxed">
                                     Love to save? Sign up now and receive a promo code for $150 OFF your first design order.
                                 </p>
                             </div>
@@ -113,16 +125,15 @@ export const PromoPopup = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
-                                        className="h-12 text-lg"
+                                        className="h-12 text-sm border-brand-border focus:border-brand-copper"
                                     />
-                                    <p className="text-xs text-muted-foreground text-center md:text-left">
+                                    <p className="text-xs text-brand-muted text-center md:text-left">
                                         *Valid for orders above $3,500. Cannot be combined.
                                     </p>
                                 </div>
                                 <Button
                                     type="submit"
-                                    size="lg"
-                                    className="w-full h-12 text-lg font-bold shadow-lg hover:shadow-xl transition-all"
+                                    className="w-full bg-brand-copper text-white text-sm tracking-[0.2em] uppercase font-medium rounded-full hover:bg-brand-copper-dark transition-all duration-300 shadow-lg h-12"
                                     disabled={loading}
                                 >
                                     {loading ? "Sending..." : "Get My Code!"}
