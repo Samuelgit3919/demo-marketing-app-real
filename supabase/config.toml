@@ -1,0 +1,10 @@
+project_id = "jhthxqgeqtflidyenxmx"
+
+[functions.cloudinary-images]
+verify_jwt = false
+
+[functions.cloudinary-upload]
+verify_jwt = false
+
+[functions.cloudinary-delete]
+verify_jwt = false

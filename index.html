@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="canonical" href="https://designandsupply.ca/" />
+  <meta name="theme-color" content="#C06D44" />
+  <meta name="robots" content="index, follow" />
+
+  <title>Design & Supply | Online Custom Closet, Kitchen & Garage Design</title>
+  <meta name="description"
+    content="Design your closet, kitchen, or garage online. Use our 3-Step Space Planner, meet a designer live in CAD, and get a same-day quote." />
+  <meta name="author" content="Design & Supply" />
+  <meta name="keywords"
+    content="custom closets, walk-in closet design, kitchen cabinets, garage storage, closet design Montreal, space planner" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Design & Supply | Online Custom Closet, Kitchen & Garage Design" />
+  <meta property="og:description"
+    content="Design your closet, kitchen, or garage online. Use our 3-Step Space Planner, meet a designer live in CAD, and get a same-day quote." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Design & Supply" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="og:url" content="https://designandsupply.ca/" />
+  <meta property="og:image" content="https://designandsupply.ca/og-image.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Design & Supply | Online Custom Closet, Kitchen & Garage Design" />
+  <meta name="twitter:description"
+    content="Design your closet, kitchen, or garage online. Use our 3-Step Space Planner, meet a designer live in CAD, and get a same-day quote." />
+  <meta name="twitter:image" content="https://designandsupply.ca/og-image.jpg" />
+
+  <!-- Structured data: LocalBusiness + WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://designandsupply.ca/#business",
+        "name": "Design & Supply",
+        "url": "https://designandsupply.ca/",
+        "email": "hello@designandsupply.com",
+        "image": "https://designandsupply.ca/og-image.jpg",
+        "priceRange": "$$",
+        "telephone": "+1-514-519-0070",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "404 Saint-Jean-Baptiste",
+          "addressLocality": "Montreal",
+          "addressRegion": "QC",
+          "postalCode": "H2Y 3Z9",
+          "addressCountry": "CA"
+        },
+        "areaServed": ["CA", "US"],
+        "makesOffer": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Custom Closet Design" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Custom Kitchen Design" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Custom Garage Storage" } }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://designandsupply.ca/#website",
+        "url": "https://designandsupply.ca/",
+        "name": "Design & Supply",
+        "publisher": { "@id": "https://designandsupply.ca/#business" }
+      }
+    ]
+  }
+  </script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="module" src="/src/main.tsx"></script>
+  <script type="text/javascript">
+    (function (l) {
+      if (l.search[1] === "/") {
+        var decoded = l.search
+          .slice(1)
+          .split("&")
+          .map(function (s) {
+            return s.replace(/~and~/g, "&");
+          })
+          .join("?");
+        window.history.replaceState(
+          null,
+          null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    })(window.location);
+  </script>
+</body>
+
+</html>
