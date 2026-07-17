@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
     const code = await claimCode(email.trim());
 
     const response = await resend.emails.send({
-      from: "Design & Supply <onboarding@resend.dev>",
+      from: Deno.env.get("PROMO_FROM_EMAIL") || "Design & Supply <onboarding@resend.dev>",
       to: [email],
       subject: "Your FREE Color Upgrade promo code 🎁",
       html: `
@@ -116,6 +116,18 @@ const handler = async (req: Request): Promise<Response> => {
         </div>
       `,
     });
+
+    // Resend returns { data, error } instead of throwing. Without this check a
+    // failed send (e.g. the test sender can only deliver to the account owner,
+    // or a bad API key) would still report success and the popup would say
+    // "Code Sent!" while nothing actually arrives.
+    if (response.error) {
+      console.error("Resend send failed:", response.error);
+      return new Response(
+        JSON.stringify({ error: response.error.message || "Could not send the promo email." }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
+      );
+    }
 
     return new Response(
       JSON.stringify({ success: true, id: response.data?.id }),
