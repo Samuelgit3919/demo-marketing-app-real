@@ -52,6 +52,7 @@ export const PromoPopup = () => {
         return () => clearTimeout(timer);
     }, [content.enabled, isAdminRoute, delayMs]);
 
+<<<<<<< HEAD
     // ---- Auto-dismiss timer: hide after `autoDismissSeconds` unless engaged.
     const engagedRef = useRef(engaged);
     engagedRef.current = engaged;
@@ -63,6 +64,15 @@ export const PromoPopup = () => {
         }, autoDismissMs);
         return () => clearTimeout(timer);
     }, [open, engaged, claimed, autoDismissMs]);
+=======
+        if (!hasClaimed) {
+            const timer = setTimeout(() => {
+                setOpen(true);
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [isAdminRoute]);
+>>>>>>> cf88a1703397812c2de3043ea4a0b04db2a267ab
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,14 +80,12 @@ export const PromoPopup = () => {
 
         setLoading(true);
         try {
-            const { error } = await supabase.auth.signInWithOtp({
-                email,
-                options: {
-                    emailRedirectTo: window.location.origin,
-                },
+            const { data, error } = await supabase.functions.invoke("send-promo-code", {
+                body: { email },
             });
 
             if (error) throw error;
+            if (data?.error) throw new Error(data.error);
 
             setClaimed(true);
             localStorage.setItem("promo_claimed", "true");
@@ -120,9 +128,16 @@ export const PromoPopup = () => {
                         >
                             Code Sent!
                         </h2>
+<<<<<<< HEAD
                         <p className="text-xs text-brand-muted leading-relaxed">
                             We've sent a magic link and your promo code to <strong>{email}</strong>. Check
                             your inbox to claim your discount.
+=======
+                        <p className="text-sm text-brand-muted">
+                            We've sent your promo code to <strong>{email}</strong>.
+                            <br />
+                            Check your inbox to claim your free color upgrade.
+>>>>>>> cf88a1703397812c2de3043ea4a0b04db2a267ab
                         </p>
                         <Button
                             onClick={() => setOpen(false)}
